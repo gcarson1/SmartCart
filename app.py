@@ -6,7 +6,7 @@ import os
 import time
 
 # Set the OpenAI API key
-openai.api_key = "KEY-GOES-HERE"
+# openai.api_key = "KEY-GOES-HERE"
 
 # Define the name of the bot
 name = 'BOT'
