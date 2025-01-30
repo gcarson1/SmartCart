@@ -1,0 +1,10 @@
+
+
+30/01 14:44:20 User: Okay! what can you help me with?  
+30/01 14:44:20 BOT: I can help you navigate the grocery store, find specific products, provide information about our store layout, and assist with any questions you may have regarding our inventory. If you need more detailed information, feel free to visit our website for assistance!
+
+30/01 14:44:39 User: Great thanks! No questions right now! 
+30/01 14:44:39 BOT: I’m here whenever you need assistance! If you have any questions or need help navigating the store in the future, just let me know. For more detailed information, you can always visit our website. Have a wonderful day!
+
+30/01 17:14:02 User: cheese 
+30/01 17:14:02 BOT: I can help you locate cheese in the grocery store. Typically, cheese can be found in the dairy section. If you need more detailed information regarding specific types of cheese or other products, please feel free to visit our website. Let me know if there's anything else I can assist you with!
