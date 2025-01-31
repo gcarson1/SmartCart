@@ -1,6 +1,10 @@
 # SmartCart
 GenAI Retail Assistance ChatBot
 
+##### To Run (Mac)
+
+##### To Run (Windows)
+
 to run: 
     run:
     python -m venv venv
