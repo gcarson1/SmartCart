@@ -1,9 +1,9 @@
 # SmartCart
 GenAI Retail Assistance ChatBot
 
-#### To Run (Mac)
+### To Run (Mac)
 
-#### To Run (Windows)
+### To Run (Windows)
 
 to run: 
     run:
