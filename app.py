@@ -32,10 +32,10 @@ cwd = os.getcwd()
 i = 1
 
 # Find an available chat history file
-while os.path.exists(os.path.join(cwd, f'chat_history{i}.txt')):
+while os.path.exists(os.path.join(cwd, f'chat_history.txt')):
     i += 1
 
-history_file = os.path.join(cwd, f'chat_history{i}.txt')
+history_file = os.path.join(cwd, f'chat_history.txt')
 
 # Create a new chat history file
 with open(history_file, 'w') as f:
