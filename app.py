@@ -4,10 +4,13 @@ from urllib.parse import quote
 import openai
 import os
 import time
+import dotenv
+from dotenv import load_dotenv
+load_dotenv()
 
 # Set the OpenAI API key
 #paste api line here for now
-openai.api_key = "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"
+openai.api_key = os.getenv('OPENAI_API_KEY')
 # Define the name of the bot
 name = 'BOT'
 

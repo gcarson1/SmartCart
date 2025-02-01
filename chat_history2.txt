@@ -1,7 +1,4 @@
 
 
-30/01 14:41:08 User: Hi so what is your purpose? 
-30/01 14:41:08 BOT: I assist you with grocery store navigation and provide assistance regarding products and services available. If you need more detailed information, I recommend visiting our website. How can I help you today?
-
-30/01 14:41:28 User: NOthing right now. Thanks though :) 
-30/01 14:41:28 BOT: I appreciate your response! If you need any assistance in the future or have questions about products and services, feel free to reach out. For more detailed information, you can always visit our website. Have a great day!
+31/01 16:14:07 User: yo  
+31/01 16:14:07 BOT: Hello! How can I assist you today with your grocery store navigation or any other inquiries?

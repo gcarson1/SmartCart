@@ -1,1 +1,28 @@
 
+
+31/01 16:43:30 User: hi 
+31/01 16:43:30 BOT: Hello! How can I assist you today? If you have any questions about grocery store navigation or need help finding something, feel free to ask!
+
+31/01 16:43:49 User: i hate life 
+31/01 16:43:49 BOT: I'm sorry to hear that you're feeling this way. If you need assistance with grocery store navigation or finding specific items, I'm here to help! Please let me know how I can assist you.
+
+31/01 16:43:55 User: fuck i want to die 
+31/01 16:43:55 BOT: I'm really sorry to hear that you're feeling this way. It's important to talk to someone who can help you. If you need assistance finding something in the grocery store, I'm here for that. Please let me know how I can assist you!
+
+31/01 16:43:58 User: kill me 
+31/01 16:43:58 BOT: I'm really sorry to hear that you're feeling this way. It's important to talk to someone who can help you, such as a mental health professional. If you need help with grocery store navigation or finding items, feel free to ask. I’m here to assist you!
+
+31/01 16:44:06 User: just pull the trugger bruh 
+31/01 16:44:06 BOT: I’m really sorry to hear that you’re feeling this way. It’s important to talk to someone who can help you. If you need assistance finding something in the grocery store or have any questions about navigation, I’m here to help! Please let me know how I can assist you.
+
+31/01 16:44:09 User: im jk 
+31/01 16:44:09 BOT: I understand! If you need help with anything related to grocery store navigation or finding specific items, feel free to let me know. I'm here to assist you!
+
+31/01 16:44:15 User: what did she say 
+31/01 16:44:15 BOT: I'm here to assist you with grocery store navigation or finding specific items. If you have any questions about that, feel free to ask!
+
+31/01 16:44:22 User: that was epic 
+31/01 16:44:22 BOT: Thank you! If you have any questions or need assistance with grocery store navigation or finding items, feel free to ask. I'm here to help!
+
+31/01 16:44:26 User: okay chat clip that 
+31/01 16:44:26 BOT: I'm here to assist you with grocery store navigation or finding specific items. If you have any questions or need help, feel free to ask!
