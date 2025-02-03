@@ -15,3 +15,6 @@ python app.py
 
 ### Note:
 if thrown error run  'pip install --upgrade flask wrkzeug' and try running again with python app.py
+
+## Hosting
+Hosted on Heroku with a Heroku PostgresSql DB.
