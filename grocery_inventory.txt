@@ -1,0 +1,21 @@
+Item Name	Item ID	Section/Aisle	Shelf ID	Price	Quantity
+Apples	1001	Produce - Aisle 1	S101	1.5	50
+Bananas	1002	Produce - Aisle 1	S102	0.6	100
+Carrots	1003	Produce - Aisle 1	S103	2.0	75
+Milk	1004	Dairy - Aisle 2	S201	3.5	30
+Eggs	1005	Dairy - Aisle 2	S202	4.0	40
+Bread	1006	Bakery - Aisle 3	S301	2.5	60
+Chicken Breast	1007	Meat - Aisle 4	S401	5.99	25
+Salmon	1008	Meat - Aisle 4	S402	7.99	20
+Rice	1009	Grains - Aisle 5	S501	2.99	50
+Pasta	1010	Grains - Aisle 5	S502	1.79	45
+Tomato Sauce	1011	Canned Goods - Aisle 6	S601	2.5	35
+Cereal	1012	Cereal - Aisle 7	S701	4.5	40
+Butter	1013	Dairy - Aisle 2	S202	3.0	25
+Yogurt	1014	Dairy - Aisle 2	S203	1.2	30
+Orange Juice	1015	Beverages - Aisle 8	S801	3.75	20
+Ground Beef	1016	Meat - Aisle 4	S403	6.99	30
+Cheese	1017	Dairy - Aisle 2	S204	4.25	20
+Frozen Pizza	1018	Frozen - Aisle 9	S901	5.49	15
+Ice Cream	1019	Frozen - Aisle 9	S902	4.99	20
+Canned Beans	1020	Canned Goods - Aisle 6	S603	1.5	50
