@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 import openai
 import os
+import re
 import time
 from dotenv import load_dotenv
 
@@ -46,20 +47,20 @@ def run_assistant(user_input):
         thread_id=thread.id, assistant_id=ASSISTANT_ID
     )
 
-    # Fetch the latest assistant message
     messages = client.beta.threads.messages.list(thread_id=thread.id)
     
     # Extract and clean the text from the response
-    assistant_message = messages.data[0].content  # This is the raw response object
     response_text = ""
-
-    # Extract plain text from response
-    for block in assistant_message:
+    for block in messages.data[0].content:
         if block.type == "text":
             response_text += block.text.value  # Extract text without annotations
 
-    return response_text
+    # Remove file citation brackets like se_text = re.sub(r"【.*?】", "", response_text)
+    pattern = r'【\d+†source】'
+    # Remove mathematical brackets like \[ 2.00 + 3.50 + ... \]
+    response_text = re.sub(pattern, '', response_text)
 
+    return response_text  # Return clean text
 
 # Flask Routes
 app = Flask(__name__)
