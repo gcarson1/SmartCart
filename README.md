@@ -10,7 +10,7 @@ python app.py
 ## To Run (Windows)
 python -m venv venv \
 ./venv/Scripts/activate \
-pip install -r requirementx.txt \
+pip install -r requirements.txt \
 python app.py 
 
 ### Note:
