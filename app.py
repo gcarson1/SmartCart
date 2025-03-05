@@ -55,9 +55,7 @@ def run_assistant(user_input):
         if block.type == "text":
             response_text += block.text.value  # Extract text without annotations
 
-    # Remove file citation brackets like se_text = re.sub(r"【.*?】", "", response_text)
     pattern = r'【\d+†source】'
-    # Remove mathematical brackets like \[ 2.00 + 3.50 + ... \]
     response_text = re.sub(pattern, '', response_text)
 
     return response_text  # Return clean text
@@ -78,6 +76,32 @@ def get_bot_response():
 def refresh():
     time.sleep(600)  # Wait for 10 minutes
     return redirect('/refresh')
+
+# New Route: Admin Login
+@app.route('/admin_login', methods=["GET", "POST"])
+def admin_login():
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        # Check against default credentials
+        if username == "user1234" and password == "pass1234":
+            return redirect("/admin_panel")
+        else:
+            error = "Invalid credentials. Please try again."
+    return render_template("admin_login.html", error=error)
+
+# New Route: Admin Panel with CSV upload
+@app.route('/admin_panel', methods=["GET", "POST"])
+def admin_panel():
+    message = None
+    if request.method == "POST":
+        csv_file = request.files.get("csvFile")
+        if csv_file:
+            message = "CSV file uploaded successfully (dummy action)."
+        else:
+            message = "No file selected."
+    return render_template("admin_panel.html", message=message)
 
 if __name__ == "__main__":
     # Ensure existing Assistant & Vector Store are used

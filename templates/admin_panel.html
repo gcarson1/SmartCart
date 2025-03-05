@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Cart - Admin Panel</title>
+  
+  <!-- Bootstrap (Optional) -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  
+  <style>
+    /* Basic Reset & Box Sizing */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Roboto", sans-serif;
+    }
+    body {
+      background-color: #cecece; /* Light gray background */
+    }
+    /* Top Bar (blue) */
+    .top_menu {
+      width: 100%;
+      height: 60px;
+      background-color: #2d5996;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    .top_menu .title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .top_menu .user_info {
+      display: flex;
+      align-items: center;
+    }
+    /* Main-return button styling */
+    .main-return img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 25px;
+    }
+    /* Avatar styling */
+    .top_menu .avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #fff;
+    }
+    /* Main container */
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: calc(100vh - 60px);
+      padding: 20px;
+    }
+    /* Admin Panel Wrapper */
+    .admin-wrapper {
+      background-color: #fff;
+      width: 400px;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: none;
+    }
+    .admin-wrapper h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .admin-wrapper .form-group {
+      margin-bottom: 15px;
+    }
+    .admin-wrapper label {
+      font-weight: 500;
+    }
+    .admin-wrapper .btn {
+      width: 100%;
+    }
+    .message {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top_menu">
+    <div class="title">Smart Cart - Admin Panel</div>
+    <div class="user_info">
+      <!-- Return to main page button -->
+      <a href="/" class="main-return">
+        <img src="static/main-return.png" alt="Return to main page" />
+      </a>
+      <!-- User Avatar -->
+      <div class="avatar"></div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <div class="admin-wrapper">
+      <h2>Upload a CSV</h2>
+      {% if message %}
+        <div class="message">{{ message }}</div>
+      {% endif %}
+      <form method="POST" action="/admin_panel" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="csvFile">Select CSV File:</label>
+          <input type="file" id="csvFile" name="csvFile" accept=".csv" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

@@ -51,6 +51,14 @@
       border-radius: 50%;
       background: #fff; /* just a placeholder white circle */
     }
+    /* Admin avatar image styling */
+    .top_menu .admin-avatar img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%; /* Makes the image circular */
+      object-fit: cover;  /* Ensures the image covers the area without distortion */
+      margin-right: 25px; /* Spacing between admin image and white avatar */
+    }
 
     /* Main 3-column layout */
     .main-container {
@@ -267,6 +275,11 @@
   <div class="top_menu">
     <div class="title">Smart Cart</div>
     <div class="user_info">
+      <!-- Admin Panel Avatar -->
+      <a href="/admin_login" class="admin-avatar">
+        <img src="static/admin-image.png" alt="Admin Panel" />
+      </a>
+      <!-- Existing White Avatar -->
       <div class="avatar"></div>
     </div>
   </div>
@@ -344,7 +357,7 @@
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-  <!-- Chat logic (same as your original) -->
+  <!-- Chat logic -->
   <script>
     (function() {
       var Message = function(arg) {
