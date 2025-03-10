@@ -103,6 +103,45 @@ def admin_panel():
             message = "No file selected."
     return render_template("admin_panel.html", message=message)
 
+# New Route: User Login
+@app.route('/user_login', methods=["GET", "POST"])
+def user_login():
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        # Check against default user credentials (replace with real user auth later)
+        if username == "user" and password == "userpass":
+            return redirect("/user_panel")
+        else:
+            error = "Invalid credentials. Please try again."
+    return render_template("user_login.html", error=error)
+
+# New Route: User Panel (User Dashboard)
+@app.route('/user_panel')
+def user_panel():
+    return render_template("user_panel.html")
+
+# New Route: Sign Up
+@app.route('/signup', methods=["GET", "POST"])
+def signup():
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        # Basic validations—this is not production-ready!
+        if not username or not password or not confirm_password:
+            error = "All fields are required."
+        elif password != confirm_password:
+            error = "Passwords do not match."
+        else:
+            # In a real application, check if the username exists,
+            # hash the password, and store the user in a database.
+            # For now, assume registration is successful.
+            return redirect("/user_panel")
+    return render_template("signup.html", error=error)
+
 if __name__ == "__main__":
     # Ensure existing Assistant & Vector Store are used
     if not get_existing_assistant():
