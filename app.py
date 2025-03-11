@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -28,25 +28,25 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 db = SQLAlchemy(app)
 
-
 # Initialize OpenAI client
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
-# Create a single LoginManager instance
 login_manager = LoginManager(app)
-login_manager.login_view = 'user_login'  # The route where users log in
+login_manager.login_view = 'user_login'
 
-# Update your User model to inherit from UserMixin, which provides default implementations
+# ------------------
+# Models
+# ------------------
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.Text, nullable=False)  # storing hashed passwords
+    password = db.Column(db.Text, nullable=False)
     email = db.Column(db.String(255), unique=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     def get_id(self):
-        # Flask-Login expects the ID as a string
         return str(self.user_id)
 
     def set_password(self, password):
@@ -55,13 +55,32 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-# Tell Flask-Login how to load a user from the session
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# New Model: ChatSession to track each conversation
+class ChatSession(db.Model):
+    __tablename__ = 'chat_sessions'
+    session_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    title = db.Column(db.String(255), default='New Chat')
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-# Function to check if an assistant already exists
+# Updated ChatMessage model with session reference
+class ChatMessage(db.Model):
+    __tablename__ = 'chat_messages'
+    message_id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('chat_sessions.session_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    sender = db.Column(db.String(10), nullable=False)  # 'user' or 'bot'
+    message = db.Column(db.Text, nullable=False)
+    sent_at = db.Column(db.DateTime, server_default=db.func.now())
+
+# ------------------
+# OpenAI Helper Functions
+# ------------------
+
 def get_existing_assistant():
     assistants = client.beta.assistants.list()
     for assistant in assistants.data:
@@ -70,7 +89,6 @@ def get_existing_assistant():
             return ASSISTANT_ID
     return None
 
-# Function to check if a vector store already exists
 def get_existing_vector_store():
     vector_stores = client.beta.vector_stores.list()
     for store in vector_stores.data:
@@ -79,7 +97,6 @@ def get_existing_vector_store():
             return VECTOR_STORE_ID
     return None
 
-# Function to run assistant using stored IDs
 def run_assistant(user_input):
     thread = client.beta.threads.create()
     print(f"Thread Created: {thread.id}")
@@ -96,47 +113,112 @@ def run_assistant(user_input):
 
     messages = client.beta.threads.messages.list(thread_id=thread.id)
     
-    # Extract and clean the text from the response
     response_text = ""
     for block in messages.data[0].content:
         if block.type == "text":
-            response_text += block.text.value  # Extract text without annotations
+            response_text += block.text.value
 
     pattern = r'【\d+†source】'
     response_text = re.sub(pattern, '', response_text)
 
-    return response_text  # Return clean text
+    return response_text
 
-# Flask Routes
+# ------------------
+# Routes
+# ------------------
+
 @app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/get")
+# New Route: Create a new chat session
+@app.route("/new_chat", methods=["POST"])
+@login_required
+def new_chat():
+    title = request.json.get("title", "New Chat")
+    new_session = ChatSession(user_id=current_user.user_id, title=title)
+    db.session.add(new_session)
+    db.session.commit()
+    return jsonify({"session_id": new_session.session_id, "title": new_session.title})
+
+# New Route: Get list of chat sessions for the logged in user
+@app.route("/chat_sessions", methods=["GET"])
+@login_required
+def chat_sessions():
+    sessions = ChatSession.query.filter_by(user_id=current_user.user_id).order_by(ChatSession.created_at.desc()).all()
+    session_list = [{
+        "session_id": s.session_id,
+        "title": s.title,
+        "created_at": s.created_at.isoformat()
+    } for s in sessions]
+    return jsonify(session_list)
+
+# Updated Route: Get chat history for a specific session
+@app.route("/chat_history", methods=["GET"])
+@login_required
+def chat_history():
+    session_id = request.args.get("session_id")
+    if not session_id:
+        return jsonify({"error": "No session id provided."}), 400
+    messages = ChatMessage.query.filter_by(user_id=current_user.user_id, session_id=session_id).order_by(ChatMessage.sent_at).all()
+    history = [{'sender': msg.sender, 'message': msg.message} for msg in messages]
+    return jsonify(history)
+
+# Updated Route: Send a message (requires session_id)
+@app.route("/get", methods=["POST"])
+@login_required
 def get_bot_response():
-    userText = request.args.get('msg')
-    return str(run_assistant(userText))
+    data = request.get_json() or {}
+    user_input = data.get('msg')
+    session_id = data.get('session_id')
+    
+    if not session_id:
+        return jsonify({'error': 'No session id provided.'}), 400
+    if not user_input:
+        return jsonify({'error': 'No message provided.'}), 400
+
+    # Save the user's message
+    user_message = ChatMessage(
+        session_id=session_id,
+        user_id=current_user.user_id,
+        sender='user',
+        message=user_input
+    )
+    db.session.add(user_message)
+    db.session.commit()
+
+    # Generate bot response
+    bot_response = run_assistant(user_input)
+
+    # Save the bot's response
+    bot_message = ChatMessage(
+        session_id=session_id,
+        user_id=current_user.user_id,
+        sender='bot',
+        message=bot_response
+    )
+    db.session.add(bot_message)
+    db.session.commit()
+
+    return jsonify({'response': bot_response})
 
 @app.route('/refresh')
 def refresh():
-    time.sleep(600)  # Wait for 10 minutes
+    time.sleep(600)
     return redirect('/refresh')
 
-# New Route: Admin Login
 @app.route('/admin_login', methods=["GET", "POST"])
 def admin_login():
     error = None
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        # Check against default credentials
         if username == "user1234" and password == "pass1234":
             return redirect("/admin_panel")
         else:
             error = "Invalid credentials. Please try again."
     return render_template("admin_login.html", error=error)
 
-# New Route: Admin Panel with CSV upload
 @app.route('/admin_panel', methods=["GET", "POST"])
 def admin_panel():
     message = None
@@ -154,17 +236,12 @@ def user_login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        
-        # Query the database for the user by username
         user = User.query.filter_by(username=username).first()
-        
         if not user or not user.check_password(password):
             error = "Invalid username or password. Please try again."
         else:
-            # Log the user in
             login_user(user)
             return redirect(url_for('index'))
-    
     return render_template("user_login.html", error=error)
 
 @app.route('/logout')
@@ -173,13 +250,10 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-
-# New Route: User Panel (User Dashboard)
 @app.route('/user_panel')
 def user_panel():
     return render_template("user_login.html")
 
-# New Route: Sign Up
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
     error = None
@@ -188,18 +262,15 @@ def signup():
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
         email = request.form.get("email")
-        
         if not username or not password or not confirm_password:
             error = "All fields are required."
         elif password != confirm_password:
             error = "Passwords do not match."
         else:
-            # Check if username already exists
             existing_user = User.query.filter_by(username=username).first()
             if existing_user:
                 error = "Username already exists."
             else:
-                # Create new user, hash the password, add to session, and commit
                 new_user = User(username=username, email=email)
                 new_user.set_password(password)
                 db.session.add(new_user)
@@ -207,13 +278,9 @@ def signup():
                 return redirect(url_for('user_login'))
     return render_template("signup.html", error=error)
 
-
 if __name__ == "__main__":
-    # Ensure existing Assistant & Vector Store are used
     if not get_existing_assistant():
         print("⚠️ Assistant ID not found in OpenAI. Make sure it exists or update your .env file.")
-    
     if not get_existing_vector_store():
         print("⚠️ Vector Store ID not found in OpenAI. Make sure it exists or update your .env file.")
-
     app.run(debug=True)

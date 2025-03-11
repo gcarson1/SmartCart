@@ -17,11 +17,9 @@
       box-sizing: border-box;
       font-family: "Roboto", sans-serif;
     }
-
     body {
       background-color: #cecece; /* Light gray behind main container */
     }
-
     /* Top Bar (blue) */
     .top_menu {
       width: 100%;
@@ -32,7 +30,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
-      box-shadow: 5px 4px 6px rgba(0, 0, 0, 0.991); /* Added shadow under the taskbar */
+      box-shadow: 5px 4px 6px rgba(0, 0, 0, 0.991);
     }
     .top_menu .title {
       font-size: 18px;
@@ -50,23 +48,21 @@
       width: 35px;
       height: 35px;
       border-radius: 50%;
-      background: #fff; /* just a placeholder white circle */
+      background: #fff;
     }
     /* Admin avatar image styling */
     .top_menu .admin-avatar img {
       width: 35px;
       height: 35px;
-      border-radius: 50%; /* Makes the image circular */
-      object-fit: cover;  /* Ensures the image covers the area without distortion */
-      margin-right: 25px; /* Spacing between admin image and white avatar */
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 25px;
     }
-
     /* Main 3-column layout */
     .main-container {
       display: flex;
-      height: calc(100vh - 60px); /* fill rest of viewport under top bar */
+      height: calc(100vh - 60px);
     }
-
     /* Left Column: Saved/Previous Chats */
     .left-column {
       width: 250px;
@@ -79,6 +75,14 @@
       padding: 15px;
       border-bottom: 1px solid #e0e0e0;
       font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .new-chat-btn {
+      margin-left: 15px;
+      padding: 4px 8px;
+      font-size: 12px;
     }
     .chat-list {
       flex: 1;
@@ -98,7 +102,7 @@
     .chat-list-item .avatar {
       width: 40px;
       height: 40px;
-      background: #bbb; /* placeholder color */
+      background: #bbb;
       border-radius: 50%;
       margin-right: 10px;
     }
@@ -114,10 +118,9 @@
       color: #888;
       margin-top: 4px;
     }
-
     /* Middle Column: Chat Window */
     .middle-column {
-      flex: 1; /* expand to fill space */
+      flex: 1;
       background-color: #fff;
       display: flex;
       flex-direction: column;
@@ -130,7 +133,7 @@
       font-size: 16px;
       font-weight: 500;
     }
-    /* Keep your chat structure: messages UL + bottom wrapper input */
+    /* Chat messages list */
     .messages {
       list-style: none;
       flex: 1;
@@ -144,7 +147,7 @@
       overflow: hidden;
       margin-bottom: 20px;
       transition: all 0.5s linear;
-      opacity: 0; /* fade in */
+      opacity: 0;
     }
     .message.appeared {
       opacity: 1;
@@ -153,7 +156,7 @@
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      background-color: #595959; /* placeholder avatar color */
+      background-color: #595959;
       display: inline-block;
     }
     .text_wrapper {
@@ -184,10 +187,9 @@
       margin-right: 10px;
     }
     .message.right .avatar {
-       float: right;
-       margin-left: 10px;
+      float: right;
+      margin-left: 10px;
     }
-
     /* Bottom input area */
     .bottom_wrapper {
       border-top: 1px solid #e0e0e0;
@@ -226,7 +228,6 @@
       color: #2a2a2a;
       background-color: #fff;
     }
-
     /* Right Column: Stores & Grocery Lists */
     .right-column {
       width: 300px;
@@ -245,7 +246,6 @@
       overflow-y: auto;
       padding: 20px;
     }
-    /* Example styling for store items or lists */
     .store-item {
       margin-bottom: 10px;
       padding: 8px;
@@ -262,8 +262,7 @@
       font-size: 13px;
       color: #555;
     }
-
-    /* Hidden message template (for JS cloning) */
+    /* Hidden message template for JS cloning */
     .message_template {
       display: none;
     }
@@ -280,29 +279,23 @@
       <a href="/admin_login" class="admin-avatar">
         <img src="static/admin-image.png" alt="Admin Panel" />
       </a>
-    <!-- Updated User Login (clickable avatar) -->
-    <a href="/user_login" title="User Login">
-      <div class="avatar"></div>
-    </a>
+      <!-- Updated User Login (clickable avatar) -->
+      <a href="/user_login" title="User Login">
+        <div class="avatar"></div>
+      </a>
     </div>
   </div>
 
   <!-- Main 3-column container -->
   <div class="main-container">
-
-    <!-- LEFT COLUMN: Saved/Previous Chats -->
+    <!-- LEFT COLUMN: Chat Sessions -->
     <div class="left-column">
-      <div class="header">Previous Chats</div>
+      <div class="header">
+        Previous Chats
+        <button id="new_chat_btn" class="new-chat-btn">New Chat</button>
+      </div>
       <div class="chat-list">
-        <!-- Example chat items -->
-        <div class="chat-list-item">
-          <div class="avatar"></div>
-          <div class="chat-info">
-            <div class="chat-name">Chat #1</div>
-            <div class="chat-snippet">Last message snippet...</div>
-          </div>
-        </div>
-        <!-- Add as many as you want -->
+        <!-- Chat sessions will be loaded dynamically here -->
       </div>
     </div>
 
@@ -310,12 +303,10 @@
     <div class="middle-column">
       <!-- Chat Window Header -->
       <div class="chat_window_header">
-        Store 1:
+        Chat Window
       </div>
-
       <!-- The <ul> for chat messages -->
       <ul class="messages"></ul>
-
       <!-- Bottom Input -->
       <div class="bottom_wrapper clearfix">
         <div class="message_input_wrapper">
@@ -325,7 +316,6 @@
           <div class="text">Send</div>
         </div>
       </div>
-
       <!-- Hidden template for new messages -->
       <div class="message_template">
         <li class="message">
@@ -351,27 +341,28 @@
           <h5>My Grocery List #1</h5>
           <p>- Milk<br/>- Eggs<br/>- Bread</p>
         </div>
-        <!-- etc... -->
       </div>
     </div>
-
   </div>
 
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-  <!-- Chat logic -->
+  <!-- Updated Chat Logic with Chat Sessions -->
   <script>
     (function() {
+      var currentSessionId = null;
+
       var Message = function(arg) {
         this.text = arg.text;
         this.message_side = arg.message_side;
         this.draw = function(_this) {
           return function() {
+            // Clone the HTML inside .message_template and add the correct classes/text
             var $message = $($('.message_template').clone().html());
             $message.addClass(_this.message_side).find('.text').html(_this.text);
             $('.messages').append($message);
-            return setTimeout(function() {
+            setTimeout(function() {
               $message.addClass('appeared');
             }, 0);
           };
@@ -379,60 +370,132 @@
         return this;
       };
 
-      $(function() {
-        var getMessageText, sendMessage;
+      // Load chat sessions for the user
+      function loadChatSessions() {
+        $.getJSON("/chat_sessions", function(data) {
+          var $chatList = $('.chat-list');
+          $chatList.empty();
+          if (data.length === 0) {
+            // If no sessions, automatically create one
+            createNewChat();
+          } else {
+            data.forEach(function(session) {
+              var $sessionItem = $('<div class="chat-list-item" data-session-id="' + session.session_id + '"><div class="avatar"></div><div class="chat-info"><div class="chat-name">' + session.title + '</div><div class="chat-snippet">Last message snippet...</div></div></div>');
+              $chatList.append($sessionItem);
+            });
+            // Auto-select the first session if none selected
+            if (!currentSessionId) {
+              currentSessionId = data[0].session_id;
+              loadChatHistory(currentSessionId);
+            }
+          }
+        });
+      }
 
-        getMessageText = function() {
+      // Create a new chat session
+      function createNewChat() {
+        $.ajax({
+          url: "/new_chat",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({ title: "New Chat" }),
+          success: function(data) {
+            currentSessionId = data.session_id;
+            loadChatSessions();
+            loadChatHistory(currentSessionId);
+          },
+          error: function() {
+            console.error("Failed to create new chat");
+          }
+        });
+      }
+
+      // Load chat history for a specific session
+      function loadChatHistory(sessionId) {
+        $.getJSON("/chat_history", { session_id: sessionId }, function(data) {
+          var $messages = $('.messages');
+          $messages.empty();
+          if (data.length === 0) {
+            var initialMsg = new Message({
+              text: 'How can I help you today?',
+              message_side: 'left'
+            });
+            initialMsg.draw();
+          } else {
+            data.forEach(function(msg) {
+              var side = (msg.sender === 'user') ? 'right' : 'left';
+              var message = new Message({
+                text: msg.message,
+                message_side: side
+              });
+              message.draw();
+            });
+          }
+          $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+        });
+      }
+
+      $(function() {
+        // Bind click event to New Chat button
+        $('#new_chat_btn').click(function() {
+          createNewChat();
+        });
+
+        // Bind click event for chat session selection
+        $(document).on('click', '.chat-list-item', function() {
+          currentSessionId = $(this).data('session-id');
+          loadChatHistory(currentSessionId);
+        });
+
+        var getMessageText = function() {
           return $('.message_input').val();
         };
 
-        sendMessage = function(text) {
-          if (text.trim() === '') {
-            return;
-          }
+        var sendMessage = function(text) {
+          if (text.trim() === '') return;
           $('.message_input').val('');
           var $messages = $('.messages');
-
-          // User's message (right side)
           var userMsg = new Message({
             text: text,
             message_side: 'right'
           });
           userMsg.draw();
-
-          // Call your backend to get bot response
-          $.get("/get", { msg: text }).done(function(data) {
-            var botMsg = new Message({
-              text: data,
-              message_side: 'left'
-            });
-            botMsg.draw();
-            $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+          $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+          $.ajax({
+            url: "/get",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ msg: text, session_id: currentSessionId }),
+            success: function(data) {
+              var botMsg = new Message({
+                text: data.response,
+                message_side: 'left'
+              });
+              botMsg.draw();
+              $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+            },
+            error: function() {
+              console.error("Failed to send message");
+            }
           });
-
-          return $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
         };
 
-        // Send on button click
+        // Bind sending message on button click.
         $('.send_message').click(function() {
           sendMessage(getMessageText());
         });
 
-        // Send on Enter key
+        // Bind sending message on Enter key press.
         $('.message_input').keyup(function(e) {
           if (e.which === 13) {
             sendMessage(getMessageText());
           }
         });
 
-        // Initial greeting from the bot
-        var initialMsg = new Message({
-          text: 'How can I help you today?',
-          message_side: 'left'
-        });
-        initialMsg.draw();
+        // Initial load of chat sessions
+        loadChatSessions();
       });
-    }.call(this));
+    }).call(this);
   </script>
 
 </body>
