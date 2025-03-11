@@ -96,8 +96,8 @@
     <div class="title">Smart Cart - Sign Up</div>
     <div class="user_info">
       <!-- Return to main page button -->
-      <a href="/" class="main-return">
-        <img src="static/main-return.png" alt="Return to main page" />
+      <a href="/user_login" class="main-return">
+        <img src="static/main-return.png" alt="Return to previous page" />
       </a>
       <!-- User Avatar (placeholder) -->
       <div class="avatar"></div>
@@ -114,16 +114,20 @@
       <!-- POST form to /signup -->
       <form method="POST" action="/signup">
         <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="Enter email (optional)" />
+        </div>
+        <div class="form-group">
           <label for="username">Username:</label>
-          <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" />
+          <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required />
         </div>
         <div class="form-group">
           <label for="password">Password:</label>
-          <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" />
+          <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required />
         </div>
         <div class="form-group">
           <label for="confirm_password">Confirm Password:</label>
-          <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm password" />
+          <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm password" required />
         </div>
         <button type="submit" class="btn btn-primary">Sign Up</button>
       </form>
