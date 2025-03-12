@@ -7,6 +7,8 @@
 
   <!-- Bootstrap (Optional) -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 
   <style>
@@ -30,8 +32,9 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
-      box-shadow: 5px 4px 6px rgba(0,0,0,0.991);
+      box-shadow: 0px 2px 9px rgba(0, 0, 0, 0.349);
       position: relative;
+      z-index: 100;
     }
     .top_menu .title {
       font-size: 18px;
@@ -89,7 +92,7 @@
     }
     /* Left Column: Chat Sessions */
     .left-column {
-      width: 250px;
+      width: 25%;
       background-color: #fff;
       border-right: 1px solid #e0e0e0;
       display: flex;
@@ -123,13 +126,6 @@
     .chat-list-item:hover {
       background-color: #f9f9f9;
     }
-    .chat-list-item .avatar {
-      width: 40px;
-      height: 40px;
-      background: #bbb;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
     .chat-list-item .chat-info {
       display: flex;
       flex-direction: column;
@@ -150,17 +146,24 @@
       flex-direction: column;
     }
     .chat_window_header {
-      padding: 10px 20px;
-      background-color: #f5f5f5;
+      padding: 17px 20px;
+      background-color: #f7f7f7;
       border-bottom: 1px solid #e0e0e0;
       font-size: 16px;
       font-weight: 500;
+      z-index: 1;
+      height: 61px;
       position: relative;
     }
     .chat_window_header button {
+      padding: 10px 0px;
       position: absolute;
       right: 20px;
       top: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
     }
     .messages {
       list-style: none;
@@ -176,16 +179,10 @@
       margin-bottom: 20px;
       transition: all 0.5s linear;
       opacity: 0;
+      padding: 1vh;
     }
     .message.appeared {
       opacity: 1;
-    }
-    .message .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #595959;
-      display: inline-block;
     }
     .text_wrapper {
       display: inline-block;
@@ -201,12 +198,14 @@
       color: #fff;
       margin-left: 10px;
       float: left;
+      box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.305);
     }
     .message.right .text_wrapper {
       background-color: #009688;
       color: #fff;
       margin-right: 10px;
       float: right;
+      box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.299);
     }
     .message.left .avatar {
       float: left;
@@ -218,11 +217,13 @@
     }
     /* Bottom input area */
     .bottom_wrapper {
+      position: relative;
       border-top: 1px solid #e0e0e0;
       padding: 10px 20px;
       display: flex;
       align-items: center;
       background-color: #fff;
+      z-index: 100;
     }
     .message_input_wrapper {
       flex: 1;
@@ -230,6 +231,7 @@
       border-radius: 4px;
       position: relative;
       margin-right: 10px;
+      z-index: 101;
     }
     .message_input {
       width: 100%;
@@ -239,6 +241,7 @@
       font-size: 14px;
       outline: none;
       color: #333;
+      z-index: 101;
     }
     .send_message {
       background-color: #3a3a3a;
@@ -249,6 +252,7 @@
       cursor: pointer;
       transition: all 0.2s linear;
       font-size: 14px;
+      z-index: 101;
     }
     .send_message:hover {
       color: #2a2a2a;
@@ -256,16 +260,17 @@
     }
     /* Right Column: Stores & Grocery Lists */
     .right-column {
-      width: 300px;
+      width: 25%;
       background-color: #fff;
       border-left: 1px solid #e0e0e0;
       display: flex;
       flex-direction: column;
     }
     .right-column .header {
-      padding: 15px;
+      padding: 17px 20px;
       border-bottom: 1px solid #e0e0e0;
       font-weight: 500;
+      height: 61px;
     }
     .stores-lists {
       flex: 1;
@@ -309,7 +314,6 @@
       <div id="avatar-dropdown" class="avatar-dropdown">
         {% if current_user.is_authenticated %}
           <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
-          <!-- Future: Profile Settings -->
         {% else %}
           <button onclick="window.location.href='/user_login'" class="dropdown-btn">Sign In</button>
         {% endif %}
@@ -323,7 +327,7 @@
     <div class="left-column">
       <div class="header">
         Previous Chats
-        <button id="new_chat_btn" class="new-chat-btn">New Chat</button>
+        <button id="new_chat_btn" class="new-chat-btn"><i class="fas fa-plus"></i></button>
       </div>
       <div class="chat-list">
         <!-- Chat sessions loaded dynamically -->
@@ -333,8 +337,10 @@
     <div class="middle-column">
       <div class="chat_window_header">
         Chat Window
-        <!-- Delete Conversation button -->
-        <button id="delete_chat_btn" style="float: right; margin-top: 5px;">Delete Conversation</button>
+        <!-- Trashcan icon button -->
+        <button id="delete_chat_btn" title="Delete Conversation">
+          <i class="fas fa-trash"></i>
+        </button>
       </div>
       <ul class="messages"></ul>
       <div class="bottom_wrapper clearfix">
@@ -399,14 +405,12 @@
         var $chatList = $('.chat-list');
         $chatList.empty();
         if (data.length === 0) {
-          // If no sessions, create a new one
           createNewChat();
         } else {
           data.forEach(function(session) {
             var $sessionItem = $('<div class="chat-list-item" data-session-id="' + session.session_id + '"><div class="avatar"></div><div class="chat-info"><div class="chat-name">' + session.title + '</div><div class="chat-snippet">Last message snippet...</div></div></div>');
             $chatList.append($sessionItem);
           });
-          // Auto-select first session if currentSessionId is not set
           if (!currentSessionId) {
             currentSessionId = data[0].session_id;
             loadChatHistory(currentSessionId);
@@ -476,45 +480,36 @@
       });
     }
     
-    // Document ready
     $(function() {
-      // Toggle avatar dropdown
       $('#user-avatar').click(function(event) {
         $('#avatar-dropdown').toggleClass('show');
         event.stopPropagation();
       });
-      // Hide dropdown when clicking outside
       $(document).click(function() {
         $('#avatar-dropdown').removeClass('show');
       });
       
-      // Bind new chat button event
       $('#new_chat_btn').click(function() {
         createNewChat();
       });
       
-      // Load chat sessions on page load
       loadChatSessions();
       
-      // Chat session selection
       $(document).on('click', '.chat-list-item', function() {
         currentSessionId = $(this).data('session-id');
         loadChatHistory(currentSessionId);
       });
       
-      // Send message on button click
       $('.send_message').click(function() {
         sendMessage($('.message_input').val());
       });
       
-      // Send message on Enter key press
       $('.message_input').keyup(function(e) {
         if (e.which === 13) {
           sendMessage($('.message_input').val());
         }
       });
       
-      // Delete conversation button event
       $('#delete_chat_btn').click(function() {
         if (currentSessionId === null) {
           console.error("No chat session selected.");
@@ -528,9 +523,7 @@
             data: JSON.stringify({ session_id: currentSessionId }),
             success: function(response) {
               console.log(response.message);
-              // Reload chat sessions; the deleted conversation should disappear
               loadChatSessions();
-              // Optionally clear the chat window
               $('.messages').empty();
               currentSessionId = null;
             },
