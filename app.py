@@ -278,6 +278,35 @@ def signup():
                 return redirect(url_for('user_login'))
     return render_template("signup.html", error=error)
 
+@app.route("/delete_chat_history", methods=["POST"])
+@login_required
+def delete_chat_history():
+    data = request.get_json() or {}
+    session_id = data.get("session_id")
+    if not session_id:
+        return jsonify({"error": "No session id provided."}), 400
+
+    try:
+        session_id = int(session_id)
+    except ValueError:
+        return jsonify({"error": "Invalid session id provided."}), 400
+
+    # Retrieve the chat session for the current user
+    session_to_delete = ChatSession.query.filter_by(session_id=session_id, user_id=current_user.user_id).first()
+    if not session_to_delete:
+        return jsonify({"message": "Chat session not found."}), 200
+
+    # Delete associated chat messages
+    ChatMessage.query.filter_by(session_id=session_id, user_id=current_user.user_id).delete()
+    # Delete the session itself
+    db.session.delete(session_to_delete)
+    db.session.commit()
+    
+    return jsonify({"message": "Chat session deleted successfully."})
+
+
+
+
 if __name__ == "__main__":
     if not get_existing_assistant():
         print("⚠️ Assistant ID not found in OpenAI. Make sure it exists or update your .env file.")

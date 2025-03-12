@@ -18,19 +18,20 @@
       font-family: "Roboto", sans-serif;
     }
     body {
-      background-color: #cecece; /* Light gray behind main container */
+      background-color: #cecece;
     }
     /* Top Bar (blue) */
     .top_menu {
       width: 100%;
       height: 60px;
-      background-color: #2d5996; /* Reference-inspired blue */
+      background-color: #2d5996;
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
-      box-shadow: 5px 4px 6px rgba(0, 0, 0, 0.991);
+      box-shadow: 5px 4px 6px rgba(0,0,0,0.991);
+      position: relative;
     }
     .top_menu .title {
       font-size: 18px;
@@ -58,12 +59,35 @@
       object-fit: cover;
       margin-right: 25px;
     }
+    /* Dropdown panel styling */
+    .avatar-dropdown {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
+      padding: 10px;
+      display: none;
+      z-index: 1000;
+    }
+    .avatar-dropdown.show {
+      display: block;
+    }
+    .dropdown-btn {
+      background: none;
+      border: none;
+      color: #2d5996;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 5px 10px;
+    }
     /* Main 3-column layout */
     .main-container {
       display: flex;
       height: calc(100vh - 60px);
     }
-    /* Left Column: Saved/Previous Chats */
+    /* Left Column: Chat Sessions */
     .left-column {
       width: 250px;
       background-color: #fff;
@@ -125,15 +149,19 @@
       display: flex;
       flex-direction: column;
     }
-    /* Chat Window Header */
     .chat_window_header {
       padding: 10px 20px;
       background-color: #f5f5f5;
       border-bottom: 1px solid #e0e0e0;
       font-size: 16px;
       font-weight: 500;
+      position: relative;
     }
-    /* Chat messages list */
+    .chat_window_header button {
+      position: absolute;
+      right: 20px;
+      top: 10px;
+    }
     .messages {
       list-style: none;
       flex: 1;
@@ -168,14 +196,12 @@
       position: relative;
       font-size: 14px;
     }
-    /* Bot (left) bubble */
     .message.left .text_wrapper {
       background-color: #2d5996;
       color: #fff;
       margin-left: 10px;
-      float: left; 
+      float: left;
     }
-    /* User (right) bubble */
     .message.right .text_wrapper {
       background-color: #009688;
       color: #fff;
@@ -262,15 +288,13 @@
       font-size: 13px;
       color: #555;
     }
-    /* Hidden message template for JS cloning */
+    /* Hidden message template for cloning */
     .message_template {
       display: none;
     }
   </style>
 </head>
-
 <body>
-
   <!-- Top Bar -->
   <div class="top_menu">
     <div class="title">Smart Cart</div>
@@ -279,13 +303,20 @@
       <a href="/admin_login" class="admin-avatar">
         <img src="static/admin-image.png" alt="Admin Panel" />
       </a>
-      <!-- Updated User Login (clickable avatar) -->
-      <a href="/user_login" title="User Login">
-        <div class="avatar"></div>
-      </a>
+      <!-- Clickable Avatar for dropdown -->
+      <div class="avatar" id="user-avatar" style="cursor: pointer;"></div>
+      <!-- Dropdown panel -->
+      <div id="avatar-dropdown" class="avatar-dropdown">
+        {% if current_user.is_authenticated %}
+          <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
+          <!-- Future: Profile Settings -->
+        {% else %}
+          <button onclick="window.location.href='/user_login'" class="dropdown-btn">Sign In</button>
+        {% endif %}
+      </div>
     </div>
   </div>
-
+  
   <!-- Main 3-column container -->
   <div class="main-container">
     <!-- LEFT COLUMN: Chat Sessions -->
@@ -295,19 +326,17 @@
         <button id="new_chat_btn" class="new-chat-btn">New Chat</button>
       </div>
       <div class="chat-list">
-        <!-- Chat sessions will be loaded dynamically here -->
+        <!-- Chat sessions loaded dynamically -->
       </div>
     </div>
-
     <!-- MIDDLE COLUMN: Chat Window -->
     <div class="middle-column">
-      <!-- Chat Window Header -->
       <div class="chat_window_header">
         Chat Window
+        <!-- Delete Conversation button -->
+        <button id="delete_chat_btn" style="float: right; margin-top: 5px;">Delete Conversation</button>
       </div>
-      <!-- The <ul> for chat messages -->
       <ul class="messages"></ul>
-      <!-- Bottom Input -->
       <div class="bottom_wrapper clearfix">
         <div class="message_input_wrapper">
           <input class="message_input" placeholder="Type your message here..."/>
@@ -316,7 +345,6 @@
           <div class="text">Send</div>
         </div>
       </div>
-      <!-- Hidden template for new messages -->
       <div class="message_template">
         <li class="message">
           <div class="avatar"></div>
@@ -326,12 +354,10 @@
         </li>
       </div>
     </div>
-
     <!-- RIGHT COLUMN: Stores & Grocery Lists -->
     <div class="right-column">
       <div class="header">Stores & Grocery Lists</div>
       <div class="stores-lists">
-        <!-- Example store items or lists -->
         <div class="store-item">
           <h5>Store 1</h5>
           <p>Location: 123 Market St.</p>
@@ -344,159 +370,177 @@
       </div>
     </div>
   </div>
-
+  
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-  <!-- Updated Chat Logic with Chat Sessions -->
+  
+  <!-- Chat, Session, and Dropdown Logic -->
   <script>
-    (function() {
-      var currentSessionId = null;
-
-      var Message = function(arg) {
-        this.text = arg.text;
-        this.message_side = arg.message_side;
-        this.draw = function(_this) {
-          return function() {
-            // Clone the HTML inside .message_template and add the correct classes/text
-            var $message = $($('.message_template').clone().html());
-            $message.addClass(_this.message_side).find('.text').html(_this.text);
-            $('.messages').append($message);
-            setTimeout(function() {
-              $message.addClass('appeared');
-            }, 0);
-          };
-        }(this);
-        return this;
+    // Global variable for the current session id
+    var currentSessionId = null;
+    
+    // Message constructor for chat messages
+    var Message = function(arg) {
+      this.text = arg.text;
+      this.message_side = arg.message_side;
+      this.draw = function() {
+        var $message = $($('.message_template').clone().html());
+        $message.addClass(this.message_side).find('.text').html(this.text);
+        $('.messages').append($message);
+        setTimeout(function() {
+          $message.addClass('appeared');
+        }, 0);
       };
-
-      // Load chat sessions for the user
-      function loadChatSessions() {
-        $.getJSON("/chat_sessions", function(data) {
-          var $chatList = $('.chat-list');
-          $chatList.empty();
-          if (data.length === 0) {
-            // If no sessions, automatically create one
-            createNewChat();
-          } else {
-            data.forEach(function(session) {
-              var $sessionItem = $('<div class="chat-list-item" data-session-id="' + session.session_id + '"><div class="avatar"></div><div class="chat-info"><div class="chat-name">' + session.title + '</div><div class="chat-snippet">Last message snippet...</div></div></div>');
-              $chatList.append($sessionItem);
-            });
-            // Auto-select the first session if none selected
-            if (!currentSessionId) {
-              currentSessionId = data[0].session_id;
-              loadChatHistory(currentSessionId);
-            }
-          }
-        });
-      }
-
-      // Create a new chat session
-      function createNewChat() {
-        $.ajax({
-          url: "/new_chat",
-          method: "POST",
-          contentType: "application/json",
-          data: JSON.stringify({ title: "New Chat" }),
-          success: function(data) {
-            currentSessionId = data.session_id;
-            loadChatSessions();
-            loadChatHistory(currentSessionId);
-          },
-          error: function() {
-            console.error("Failed to create new chat");
-          }
-        });
-      }
-
-      // Load chat history for a specific session
-      function loadChatHistory(sessionId) {
-        $.getJSON("/chat_history", { session_id: sessionId }, function(data) {
-          var $messages = $('.messages');
-          $messages.empty();
-          if (data.length === 0) {
-            var initialMsg = new Message({
-              text: 'How can I help you today?',
-              message_side: 'left'
-            });
-            initialMsg.draw();
-          } else {
-            data.forEach(function(msg) {
-              var side = (msg.sender === 'user') ? 'right' : 'left';
-              var message = new Message({
-                text: msg.message,
-                message_side: side
-              });
-              message.draw();
-            });
-          }
-          $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
-        });
-      }
-
-      $(function() {
-        // Bind click event to New Chat button
-        $('#new_chat_btn').click(function() {
+    };
+    
+    // Load chat sessions for the user
+    function loadChatSessions() {
+      $.getJSON("/chat_sessions", function(data) {
+        var $chatList = $('.chat-list');
+        $chatList.empty();
+        if (data.length === 0) {
+          // If no sessions, create a new one
           createNewChat();
-        });
-
-        // Bind click event for chat session selection
-        $(document).on('click', '.chat-list-item', function() {
-          currentSessionId = $(this).data('session-id');
-          loadChatHistory(currentSessionId);
-        });
-
-        var getMessageText = function() {
-          return $('.message_input').val();
-        };
-
-        var sendMessage = function(text) {
-          if (text.trim() === '') return;
-          $('.message_input').val('');
-          var $messages = $('.messages');
-          var userMsg = new Message({
-            text: text,
-            message_side: 'right'
+        } else {
+          data.forEach(function(session) {
+            var $sessionItem = $('<div class="chat-list-item" data-session-id="' + session.session_id + '"><div class="avatar"></div><div class="chat-info"><div class="chat-name">' + session.title + '</div><div class="chat-snippet">Last message snippet...</div></div></div>');
+            $chatList.append($sessionItem);
           });
-          userMsg.draw();
+          // Auto-select first session if currentSessionId is not set
+          if (!currentSessionId) {
+            currentSessionId = data[0].session_id;
+            loadChatHistory(currentSessionId);
+          }
+        }
+      });
+    }
+    
+    // Create a new chat session
+    function createNewChat() {
+      $.ajax({
+        url: "/new_chat",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ title: "New Chat" }),
+        success: function(data) {
+          currentSessionId = data.session_id;
+          loadChatSessions();
+          loadChatHistory(currentSessionId);
+        },
+        error: function() {
+          console.error("Failed to create new chat");
+        }
+      });
+    }
+    
+    // Load chat history for a specific session
+    function loadChatHistory(sessionId) {
+      $.getJSON("/chat_history", { session_id: sessionId }, function(data) {
+        var $messages = $('.messages');
+        $messages.empty();
+        if (data.length === 0) {
+          var initialMsg = new Message({ text: 'How can I help you today?', message_side: 'left' });
+          initialMsg.draw();
+        } else {
+          data.forEach(function(msg) {
+            var side = (msg.sender === 'user') ? 'right' : 'left';
+            var message = new Message({ text: msg.message, message_side: side });
+            message.draw();
+          });
+        }
+        $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+      });
+    }
+    
+    // Send a message in the current session
+    function sendMessage(text) {
+      if (text.trim() === '') return;
+      $('.message_input').val('');
+      var $messages = $('.messages');
+      var userMsg = new Message({ text: text, message_side: 'right' });
+      userMsg.draw();
+      $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+      $.ajax({
+        url: "/get",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ msg: text, session_id: currentSessionId }),
+        success: function(data) {
+          var botMsg = new Message({ text: data.response, message_side: 'left' });
+          botMsg.draw();
           $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+        },
+        error: function() {
+          console.error("Failed to send message");
+        }
+      });
+    }
+    
+    // Document ready
+    $(function() {
+      // Toggle avatar dropdown
+      $('#user-avatar').click(function(event) {
+        $('#avatar-dropdown').toggleClass('show');
+        event.stopPropagation();
+      });
+      // Hide dropdown when clicking outside
+      $(document).click(function() {
+        $('#avatar-dropdown').removeClass('show');
+      });
+      
+      // Bind new chat button event
+      $('#new_chat_btn').click(function() {
+        createNewChat();
+      });
+      
+      // Load chat sessions on page load
+      loadChatSessions();
+      
+      // Chat session selection
+      $(document).on('click', '.chat-list-item', function() {
+        currentSessionId = $(this).data('session-id');
+        loadChatHistory(currentSessionId);
+      });
+      
+      // Send message on button click
+      $('.send_message').click(function() {
+        sendMessage($('.message_input').val());
+      });
+      
+      // Send message on Enter key press
+      $('.message_input').keyup(function(e) {
+        if (e.which === 13) {
+          sendMessage($('.message_input').val());
+        }
+      });
+      
+      // Delete conversation button event
+      $('#delete_chat_btn').click(function() {
+        if (currentSessionId === null) {
+          console.error("No chat session selected.");
+          return;
+        }
+        if (confirm("Are you sure you want to delete this conversation? This action cannot be undone.")) {
           $.ajax({
-            url: "/get",
+            url: "/delete_chat_history",
             method: "POST",
             contentType: "application/json",
-            data: JSON.stringify({ msg: text, session_id: currentSessionId }),
-            success: function(data) {
-              var botMsg = new Message({
-                text: data.response,
-                message_side: 'left'
-              });
-              botMsg.draw();
-              $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+            data: JSON.stringify({ session_id: currentSessionId }),
+            success: function(response) {
+              console.log(response.message);
+              // Reload chat sessions; the deleted conversation should disappear
+              loadChatSessions();
+              // Optionally clear the chat window
+              $('.messages').empty();
+              currentSessionId = null;
             },
             error: function() {
-              console.error("Failed to send message");
+              console.error("Failed to delete conversation");
             }
           });
-        };
-
-        // Bind sending message on button click.
-        $('.send_message').click(function() {
-          sendMessage(getMessageText());
-        });
-
-        // Bind sending message on Enter key press.
-        $('.message_input').keyup(function(e) {
-          if (e.which === 13) {
-            sendMessage(getMessageText());
-          }
-        });
-
-        // Initial load of chat sessions
-        loadChatSessions();
+        }
       });
-    }).call(this);
+    });
   </script>
-
 </body>
 </html>
