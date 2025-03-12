@@ -20,7 +20,7 @@
       font-family: "Roboto", sans-serif;
     }
     body {
-      background-color: #cecece;
+      background-color: #f9fdff;
     }
     /* Top Bar (blue) */
     .top_menu {
@@ -93,13 +93,14 @@
     /* Left Column: Chat Sessions */
     .left-column {
       width: 25%;
-      background-color: #fff;
+      background-color: #f9fdff;
       border-right: 1px solid #e0e0e0;
       display: flex;
       flex-direction: column;
     }
     .left-column .header {
       padding: 15px;
+      background-color: #e9eef3;
       border-bottom: 1px solid #e0e0e0;
       font-weight: 500;
       display: flex;
@@ -109,7 +110,9 @@
     .new-chat-btn {
       margin-left: 15px;
       padding: 4px 8px;
-      font-size: 12px;
+      font-size: 14px;
+      border: none;
+      outline: none;
     }
     .chat-list {
       flex: 1;
@@ -124,7 +127,7 @@
       transition: background 0.2s;
     }
     .chat-list-item:hover {
-      background-color: #f9f9f9;
+      background-color: #e9eef3ab;
     }
     .chat-list-item .chat-info {
       display: flex;
@@ -147,7 +150,7 @@
     }
     .chat_window_header {
       padding: 17px 20px;
-      background-color: #f7f7f7;
+      background-color: #e9eef3;
       border-bottom: 1px solid #e0e0e0;
       font-size: 16px;
       font-weight: 500;
@@ -171,7 +174,7 @@
       margin: 0;
       padding: 20px 10px 0 10px;
       overflow-y: auto;
-      background-color: #fafafa;
+      background-color: #e9eef363;
     }
     .message {
       clear: both;
@@ -244,11 +247,13 @@
       z-index: 101;
     }
     .send_message {
+      height: 90%;
       background-color: #3a3a3a;
       color: #f8f8f8;
       border: 1px solid #000;
       border-radius: 4px;
-      padding: 8px 16px;
+      margin-bottom: 2px;
+      padding: 4px 16px;
       cursor: pointer;
       transition: all 0.2s linear;
       font-size: 14px;
@@ -261,13 +266,14 @@
     /* Right Column: Stores & Grocery Lists */
     .right-column {
       width: 25%;
-      background-color: #fff;
+      background-color: #f9fdff;
       border-left: 1px solid #e0e0e0;
       display: flex;
       flex-direction: column;
     }
     .right-column .header {
       padding: 17px 20px;
+      background-color: #e9eef3;
       border-bottom: 1px solid #e0e0e0;
       font-weight: 500;
       height: 61px;
@@ -348,8 +354,9 @@
           <input class="message_input" placeholder="Type your message here..."/>
         </div>
         <div class="send_message">
-          <div class="text">Send</div>
+          <i class="fas fa-paper-plane"></i>
         </div>
+        
       </div>
       <div class="message_template">
         <li class="message">
