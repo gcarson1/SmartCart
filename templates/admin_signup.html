@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Cart - Admin Login</title>
+  <title>Smart Cart - Admin Sign Up</title>
   
   <!-- Bootstrap (Optional) -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -62,7 +62,7 @@
       height: calc(100vh - 60px);
       padding: 20px;
     }
-    /* Centered login form */
+    /* Centered form wrapper */
     .login-wrapper {
       background-color: #fff;
       width: 350px;
@@ -92,7 +92,7 @@
 </head>
 <body>
   <div class="top_menu">
-    <div class="title">Smart Cart - Admin Login</div>
+    <div class="title">Smart Cart - Admin Sign Up</div>
     <div class="user_info">
       <a href="/" class="main-return">
         <img src="static/main-return.png" alt="Return to main page" />
@@ -102,23 +102,31 @@
   </div>
   <div class="main-container">
     <div class="login-wrapper">
-      <h2>Admin Login</h2>
+      <h2>Create Admin Account</h2>
       {% if error %}
         <div class="error-message">{{ error }}</div>
       {% endif %}
-      <form method="POST" action="/admin_login">
+      <form method="POST" action="/admin_signup">
         <div class="form-group">
           <label for="username">Username:</label>
-          <input type="text" id="username" name="username" class="form-control" />
+          <input type="text" id="username" name="username" class="form-control" placeholder="Enter a username" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required />
         </div>
         <div class="form-group">
           <label for="password">Password:</label>
-          <input type="password" id="password" name="password" class="form-control" />
+          <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required />
         </div>
-        <button type="submit" class="btn btn-primary">Login</button>
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password:</label>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm your password" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Create Admin Account</button>
       </form>
       <div class="text-center" style="margin-top: 15px;">
-        <a href="/admin_signup" class="btn btn-secondary">Admin Sign Up</a>
+        <a href="/admin_login" class="btn btn-secondary">Back to Admin Login</a>
       </div>
     </div>
   </div>

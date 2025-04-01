@@ -311,10 +311,13 @@
   <div class="top_menu">
     <div class="title">Smart Cart</div>
     <div class="user_info">
-      <!-- Admin Panel Avatar -->
-      <a href="/admin_login" class="admin-avatar">
-        <img src="static/admin-image.png" alt="Admin Panel" />
-      </a>
+      {% if current_user.is_authenticated and current_user.is_admin %}
+        <a href="/admin_panel" class="admin-avatar">
+      {% else %}
+        <a href="/admin_login" class="admin-avatar">
+      {% endif %}
+            <img src="static/admin-image.png" alt="Admin Panel" />
+        </a>
       <!-- Clickable Avatar for dropdown -->
       <div class="avatar" id="user-avatar" style="cursor: pointer;"></div>
       <!-- Dropdown panel -->
@@ -325,6 +328,7 @@
           <button onclick="window.location.href='/user_login'" class="dropdown-btn">Sign In</button>
         {% endif %}
       </div>
+    </div>
     </div>
   </div>
   

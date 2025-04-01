@@ -58,6 +58,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
     email = db.Column(db.String(255), unique=True)
+    is_admin = db.Column(db.Boolean, default=False)  # New field
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     def get_id(self):
@@ -216,22 +217,60 @@ def get_bot_response():
 
     return jsonify({'response': bot_response})
 
+@app.route('/admin_signup', methods=["GET", "POST"])
+def admin_signup():
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        email = request.form.get("email")
+        if not username or not password or not confirm_password:
+            error = "All fields are required."
+        elif password != confirm_password:
+            error = "Passwords do not match."
+        else:
+            existing_user = User.query.filter_by(username=username).first()
+            if existing_user:
+                error = "Username already exists."
+            else:
+                new_admin = User(username=username, email=email, is_admin=True)
+                new_admin.set_password(password)
+                db.session.add(new_admin)
+                db.session.commit()
+                return redirect(url_for('admin_login'))
+    return render_template("admin_signup.html", error=error)
+
+@app.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        # Fetch the user with the matching username and admin flag
+        admin = User.query.filter_by(username=username, is_admin=True).first()
+        # Use check_password to compare the entered password with the hashed password
+        if not admin or not admin.check_password(password):
+            error = "Invalid credentials or not an admin user."
+            return render_template('admin_login.html', error=error)
+        # Log the admin in (if using Flask-Login)
+        login_user(admin)
+        return redirect('/admin_panel')
+    return render_template('admin_login.html', error=error)
+
+
+
 @app.route('/refresh')
 def refresh():
     time.sleep(600)
     return redirect('/refresh')
 
-@app.route('/admin_login', methods=["GET", "POST"])
-def admin_login():
-    error = None
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        if username == "user1234" and password == "pass1234":
-            return redirect("/admin_panel")
-        else:
-            error = "Invalid credentials. Please try again."
-    return render_template("admin_login.html", error=error)
+def add_admin(username, password, email):
+    hashed_password = generate_password_hash(password)
+    query = "INSERT INTO users (username, password, email, is_admin) VALUES (:username, :password, :email, true)"
+    db.session.execute(query, {'username': username, 'password': hashed_password, 'email': email})
+    db.session.commit()
+
 
 def create_dynamic_assistant(txt_file):
     # Ensure the file pointer is at the start
