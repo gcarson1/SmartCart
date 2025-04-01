@@ -377,14 +377,12 @@
       <div class="header">Stores & Grocery Lists</div>
       <div class="stores-lists">
         <div class="store-item">
-          <h5>Store 1</h5>
-          <p>Location: 123 Market St.</p>
+          <label for="storeSelect">Select a store:</label>
+          <select id="storeSelect" class="form-control"></select>
         </div>
+        
         <hr />
-        <div class="store-item">
-          <h5>My Grocery List #1</h5>
-          <p>- Milk<br/>- Eggs<br/>- Bread</p>
-        </div>
+        
       </div>
     </div>
   </div>
@@ -396,6 +394,7 @@
   <script>
     // Global variable for the current session id
     var currentSessionId = null;
+    var selectedStoreID = null;
     
     // Message constructor for chat messages
     var Message = function(arg) {
@@ -468,29 +467,50 @@
       });
     }
     
+    function loadStores() {
+    $.getJSON("/stores", function(data) {
+      var $storeSelect = $("#storeSelect");
+      $storeSelect.empty();
+      $storeSelect.append($("<option>", { value: "", text: "Choose a store..." }));
+      data.forEach(function(store) {
+        // store_id and store.name come from the JSON route
+        $storeSelect.append($("<option>", { 
+          value: store.store_id, 
+          text: store.name 
+        }));
+      });
+    });
+  }
+
+
     // Send a message in the current session
     function sendMessage(text) {
-      if (text.trim() === '') return;
-      $('.message_input').val('');
-      var $messages = $('.messages');
-      var userMsg = new Message({ text: text, message_side: 'right' });
-      userMsg.draw();
-      $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
-      $.ajax({
-        url: "/get",
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({ msg: text, session_id: currentSessionId }),
-        success: function(data) {
-          var botMsg = new Message({ text: data.response, message_side: 'left' });
-          botMsg.draw();
-          $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
-        },
-        error: function() {
-          console.error("Failed to send message");
-        }
-      });
-    }
+    if (text.trim() === "") return;
+    $(".message_input").val("");
+    var $messages = $(".messages");
+    var userMsg = new Message({ text: text, message_side: "right" });
+    userMsg.draw();
+    $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
+
+    $.ajax({
+      url: "/get",
+      method: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({
+        msg: text,
+        session_id: currentSessionId,
+        store_id: selectedStoreId   // <----- new
+      }),
+      success: function(data) {
+        var botMsg = new Message({ text: data.response, message_side: "left" });
+        botMsg.draw();
+        $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
+      },
+      error: function() {
+        console.error("Failed to send message");
+      }
+    });
+  }
     
     $(function() {
       $('#user-avatar').click(function(event) {
@@ -545,7 +565,29 @@
           });
         }
       });
+
+      loadChatSessions();
+      loadStores();  // load store list from the new route
+
+      $("#storeSelect").change(function() {
+        selectedStoreId = $(this).val();
+        console.log("User selected store ID:", selectedStoreId);
+      });
+
+      $(".send_message").click(function() {
+        sendMessage($(".message_input").val());
+      });
+
+      $(".message_input").keyup(function(e) {
+        if (e.which === 13) {
+          sendMessage($(".message_input").val());
+        }
+      });
+
     });
+
+    
+
   </script>
 </body>
 </html>

@@ -51,6 +51,19 @@ login_manager.login_view = 'user_login'
 # ------------------
 # Models
 # ------------------
+class Store(db.Model):
+    __tablename__ = 'stores'
+    store_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), unique=True, nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    address = db.Column(db.String(255), nullable=False)
+    city = db.Column(db.String(255), nullable=False)
+    state = db.Column(db.String(255), nullable=False)
+    zip_code = db.Column(db.String(20), nullable=False)
+    inventory_file_id = db.Column(db.String(255))
+    has_assistant = db.Column(db.Boolean, default=False)
+    assistant_id = db.Column(db.String(255))
+    vector_store_id = db.Column(db.String(255))
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -179,14 +192,37 @@ def chat_history():
     history = [{'sender': msg.sender, 'message': msg.message} for msg in messages]
     return jsonify(history)
 
-# Updated Route: Send a message (requires session_id)
+def run_assistant_for_store(assistant_id, user_input):
+    thread = client.beta.threads.create()
+    client.beta.threads.messages.create(
+        thread_id=thread.id,
+        role="user",
+        content=user_input
+    )
+    run = client.beta.threads.runs.create_and_poll(
+        thread_id=thread.id,
+        assistant_id=assistant_id
+    )
+    messages = client.beta.threads.messages.list(thread_id=thread.id)
+
+    response_text = ""
+    for block in messages.data[0].content:
+        if block.type == "text":
+            response_text += block.text.value
+
+    # strip out doc-source markers if necessary
+    pattern = r'【\d+†source】'
+    response_text = re.sub(pattern, '', response_text)
+    return response_text
+
+
 @app.route("/get", methods=["POST"])
 @login_required
 def get_bot_response():
     data = request.get_json() or {}
     user_input = data.get('msg')
     session_id = data.get('session_id')
-    
+    store_id = data.get('store_id')  # new
     if not session_id:
         return jsonify({'error': 'No session id provided.'}), 400
     if not user_input:
@@ -202,8 +238,13 @@ def get_bot_response():
     db.session.add(user_message)
     db.session.commit()
 
-    # Generate bot response
-    bot_response = run_assistant(user_input)
+    # Retrieve the store’s assistant ID
+    store = Store.query.get(store_id)
+    if not store or not store.assistant_id:
+        return jsonify({'error': 'Selected store is invalid or has no assistant set up.'}), 400
+
+    # Generate bot response using this specific store's assistant
+    bot_response = run_assistant_for_store(store.assistant_id, user_input)
 
     # Save the bot's response
     bot_message = ChatMessage(
@@ -216,6 +257,7 @@ def get_bot_response():
     db.session.commit()
 
     return jsonify({'response': bot_response})
+
 
 @app.route('/admin_signup', methods=["GET", "POST"])
 def admin_signup():
@@ -271,6 +313,20 @@ def add_admin(username, password, email):
     db.session.execute(query, {'username': username, 'password': hashed_password, 'email': email})
     db.session.commit()
 
+@app.route("/stores")
+@login_required
+def list_stores():
+    all_stores = Store.query.all()
+    results = []
+    for s in all_stores:
+        results.append({
+            "store_id": s.store_id,
+            "name": s.name,
+            "address": s.address,
+            "assistant_id": s.assistant_id  # If you need to see it in front-end
+        })
+    return jsonify(results)
+
 
 def create_dynamic_assistant(txt_file):
     # Ensure the file pointer is at the start
@@ -316,21 +372,59 @@ def create_dynamic_assistant(txt_file):
     return new_assistant_id, new_vector_store_id, uploaded_file.id
 
 @app.route('/admin_panel', methods=["GET", "POST"])
+@login_required
 def admin_panel():
+    # Check if the current admin has a store record.
+    store = Store.query.filter_by(user_id=current_user.user_id).first()
     message = None
-    if request.method == "POST":
-        txt_file = request.files.get("txtFile")
-        if txt_file:
-            try:
-                # Reset file pointer
-                txt_file.seek(0)
-                new_assistant_id, new_vector_store_id, uploaded_file_id = create_dynamic_assistant(txt_file)
-                message = (f"Store Inventory Created. Assistant ID: {new_assistant_id}, Vector Store ID: {new_vector_store_id}, File ID: {uploaded_file_id}")
-            except Exception as e:
-                message = f"Error creating dynamic assistant: {str(e)}"
-        else:
-            message = "No file selected."
-    return render_template("admin_panel.html", message=message)
+    
+    # Step 1: Store Info Setup
+    if not store:
+        if request.method == "POST" and 'name' in request.form:
+            name = request.form.get("name")
+            address = request.form.get("address")
+            city = request.form.get("city")
+            state = request.form.get("state")
+            zip_code = request.form.get("zip_code")
+            if not (name and address and city and state and zip_code):
+                message = "All fields are required."
+            else:
+                new_store = Store(
+                    user_id=current_user.user_id,
+                    name=name,
+                    address=address,
+                    city=city,
+                    state=state,
+                    zip_code=zip_code
+                )
+                db.session.add(new_store)
+                db.session.commit()
+                message = "Store information saved. Please upload your inventory file."
+                store = new_store
+        return render_template("admin_panel.html", message=message, store=store)
+    
+    # Step 2: File Upload for Inventory
+    if store and not store.has_assistant:
+        if request.method == "POST" and 'txtFile' in request.files:
+            txt_file = request.files.get("txtFile")
+            if txt_file:
+                try:
+                    txt_file.seek(0)
+                    new_assistant_id, new_vector_store_id, uploaded_file_id = create_dynamic_assistant(txt_file)
+                    # Update store record with the new file ID and mark assistant as active.
+                    store.inventory_file_id = uploaded_file_id
+                    store.has_assistant = True
+                    db.session.commit()
+                    message = f"Assistant created. Inventory File ID: {uploaded_file_id}"
+                except Exception as e:
+                    message = f"Error creating dynamic assistant: {str(e)}"
+            else:
+                message = "No file selected."
+        return render_template("admin_panel.html", message=message, store=store)
+    
+    # Step 3: Assistant is active; show deletion form
+    return render_template("admin_panel.html", message=message, store=store)
+
 
 # New endpoint: Delete an uploaded file from vector store
 @app.route('/delete_uploaded_file', methods=["POST"])
