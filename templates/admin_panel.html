@@ -4,9 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Smart Cart - Admin Panel</title>
-  
+
   <!-- Bootstrap (Optional) -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <!-- Font Awesome for icons (Optional) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
+  <!-- Google Fonts for Roboto -->
+  <link
+    href="https://fonts.googleapis.com/css?family=Roboto:400,500,700"
+    rel="stylesheet"
+  >
   
   <style>
     /* Basic Reset & Box Sizing */
@@ -14,14 +24,19 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f4f6f9; /* Slight off-white background */
       font-family: "Roboto", sans-serif;
     }
-    body {
-      background-color: #cecece; /* Light gray background */
-    }
-    /* Top Bar (blue) */
+
+    /* Top Bar */
     .top_menu {
-      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 60px;
       background-color: #2d5996;
       color: #fff;
@@ -29,22 +44,26 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
+      z-index: 1000;
     }
     .top_menu .title {
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 20px;
+      font-weight: 500;
     }
     .top_menu .user_info {
       display: flex;
       align-items: center;
     }
-    /* Main-return button styling */
-    .main-return img {
+    .top_menu .user_info .main-return img {
       width: 35px;
       height: 35px;
       border-radius: 50%;
       object-fit: cover;
       margin-right: 25px;
+      transition: transform 0.3s ease;
+    }
+    .top_menu .user_info .main-return img:hover {
+      transform: scale(1.1);
     }
     /* Avatar styling */
     .top_menu .avatar {
@@ -53,39 +72,73 @@
       border-radius: 50%;
       background: #fff;
     }
-    /* Main container */
-    .main-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: calc(100vh - 60px);
-      padding: 20px;
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 60px; /* below the top_menu */
+      left: 0;
+      bottom: 0;
+      width: 220px;
+      background-color: #2d5996;
+      padding-top: 20px;
+      z-index: 999;
+      overflow-y: auto;
     }
+    .sidebar .nav-link {
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 15px;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #22477a;
+      text-decoration: none;
+    }
+    .sidebar .nav-link i {
+      margin-right: 8px;
+    }
+
+    /* Main Container (to the right of the sidebar) */
+    .main-container {
+      margin-top: 60px; /* below the top_menu */
+      margin-left: 220px; /* to the right of the sidebar */
+      padding: 20px;
+      min-height: calc(100vh - 60px);
+    }
+
     /* Admin Panel Wrapper */
     .admin-wrapper {
       background-color: #fff;
-      width: 400px;
-      padding: 20px;
-      border-radius: 4px;
-      box-shadow: none;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
     .admin-wrapper h2 {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       text-align: center;
+      font-size: 22px;
+      color: #333;
     }
     .admin-wrapper .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     .admin-wrapper label {
       font-weight: 500;
+      margin-bottom: 5px;
+      display: block;
+      color: #555;
     }
     .admin-wrapper .btn {
       width: 100%;
+      padding: 10px;
+      font-size: 16px;
     }
     .message {
       text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
     .success {
       color: green;
@@ -109,21 +162,91 @@
     </div>
   </div>
 
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="fas fa-box"></i> Inventory
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="fas fa-shopping-cart"></i> Orders
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="fas fa-cog"></i> Settings
+        </a>
+      </li>
+    </ul>
+  </div>
+
   <!-- Main Container -->
   <div class="main-container">
     <div class="admin-wrapper">
-      <h2>Upload a CSV</h2>
+      <h2>Upload a Text File of your Store Inventory</h2>
       {% if message %}
         <div class="message">{{ message }}</div>
       {% endif %}
       <form method="POST" action="/admin_panel" enctype="multipart/form-data">
         <div class="form-group">
-          <label for="csvFile">Select CSV File:</label>
-          <input type="file" id="csvFile" name="csvFile" accept=".csv" class="form-control" />
+          <label for="txtFile">Select Text File:</label>
+          <input type="file" id="txtFile" name="txtFile" accept=".txt" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <button type="submit" class="btn btn-primary">Upload Inventory</button>
       </form>
     </div>
+
+    <!-- New Section: Delete File from Vector Store -->
+    <div class="admin-wrapper" style="margin-top:20px;">
+      <h2>Delete File from Vector Store</h2>
+      <form id="deleteForm">
+        <div class="form-group">
+          <label for="fileId">File ID:</label>
+          <input type="text" id="fileId" name="fileId" class="form-control" placeholder="Enter file ID to delete">
+        </div>
+        <button type="button" class="btn btn-danger" onclick="deleteFile()">Delete File</button>
+      </form>
+      <div id="deleteMessage" class="message"></div>
+    </div>
   </div>
+  
+  <!-- Optional JS (Bootstrap, etc.) -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script>
+    function deleteFile() {
+      const fileId = document.getElementById("fileId").value;
+      if (!fileId) {
+        alert("Please enter a file ID.");
+        return;
+      }
+      fetch('/delete_uploaded_file', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ file_id: fileId })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("deleteMessage").innerHTML = '<span class="success">' + data.message + '</span>';
+        } else {
+          document.getElementById("deleteMessage").innerHTML = '<span class="error">' + data.error + '</span>';
+        }
+      })
+      .catch(error => {
+        document.getElementById("deleteMessage").innerHTML = '<span class="error">Error: ' + error + '</span>';
+      });
+    }
+  </script>
 </body>
 </html>

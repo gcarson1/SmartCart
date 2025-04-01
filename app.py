@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from authlib.integrations.flask_client import OAuth
+
 import openai
 import os
 import re
@@ -16,6 +18,18 @@ ASSISTANT_ID = os.getenv("ASSISTANT_ID")
 VECTOR_STORE_ID = os.getenv("VECTOR_STORE_ID")
 
 app = Flask(__name__)
+
+# Initialize OAuth and register the Google client
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),  # Set these in your .env file
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+    access_token_url='https://oauth2.googleapis.com/token',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    api_base_url='https://www.googleapis.com/oauth2/v2/',
+    client_kwargs={'scope': 'openid email profile'},
+)
 
 # Get the DATABASE_URL and fix the dialect if needed.
 uri = os.getenv("DATABASE_URL")
@@ -219,16 +233,80 @@ def admin_login():
             error = "Invalid credentials. Please try again."
     return render_template("admin_login.html", error=error)
 
+def create_dynamic_assistant(txt_file):
+    # Ensure the file pointer is at the start
+    txt_file.seek(0)
+    try:
+        # Step 1: Upload the text file using the underlying stream
+        uploaded_file = client.files.create(
+            file=(txt_file.filename, txt_file.stream, "text/plain"),
+            purpose="assistants"
+        )
+        print(f"Uploaded file, id: {uploaded_file.id}")
+    except Exception as e:
+        raise Exception(f"Failed to upload file: {e}")
+
+    try:
+        # Step 2: Create a new vector store and attach the uploaded file via its file ID.
+        vector_store = client.beta.vector_stores.create(
+            name=f"Dynamic Vector Store {int(time.time())}",
+            file_ids=[uploaded_file.id]
+        )
+        new_vector_store_id = vector_store.id
+        print(f"Created new vector store with ID: {new_vector_store_id}")
+    except Exception as e:
+        raise Exception(f"Failed to create vector store: {e}")
+
+    try:
+        # Step 3: Create a new assistant with file_search enabled and attach the vector store.
+        assistant = client.beta.assistants.create(
+            name=f"Dynamic Assistant {int(time.time())}",
+            instructions="You are a helpful assistant that uses file search to answer questions based on the uploaded document.",
+            model="gpt-4o-mini",
+            tools=[{"type": "file_search"}],
+            tool_resources={
+                "file_search": {"vector_store_ids": [new_vector_store_id]}
+            }
+        )
+        new_assistant_id = assistant.id
+        print(f"Created new assistant with ID: {new_assistant_id}")
+    except Exception as e:
+        raise Exception(f"Failed to create dynamic assistant: {e}")
+
+    # Return the assistant ID, vector store ID, and the uploaded file's ID.
+    return new_assistant_id, new_vector_store_id, uploaded_file.id
+
 @app.route('/admin_panel', methods=["GET", "POST"])
 def admin_panel():
     message = None
     if request.method == "POST":
-        csv_file = request.files.get("csvFile")
-        if csv_file:
-            message = "CSV file uploaded successfully (dummy action)."
+        txt_file = request.files.get("txtFile")
+        if txt_file:
+            try:
+                # Reset file pointer
+                txt_file.seek(0)
+                new_assistant_id, new_vector_store_id, uploaded_file_id = create_dynamic_assistant(txt_file)
+                message = (f"Store Inventory Created. Assistant ID: {new_assistant_id}, Vector Store ID: {new_vector_store_id}, File ID: {uploaded_file_id}")
+            except Exception as e:
+                message = f"Error creating dynamic assistant: {str(e)}"
         else:
             message = "No file selected."
     return render_template("admin_panel.html", message=message)
+
+# New endpoint: Delete an uploaded file from vector store
+@app.route('/delete_uploaded_file', methods=["POST"])
+def delete_uploaded_file():
+    data = request.get_json() or {}
+    file_id = data.get("file_id")
+    if not file_id:
+        return jsonify({"error": "No file id provided."}), 400
+    try:
+        # Delete the file from OpenAI (this removes it from all vector store associations)
+        deletion_result = client.files.delete(file_id)
+        return jsonify({"success": True, "message": "File deleted from vector store.", "result": deletion_result})
+    except Exception as e:
+        print("Error deleting file:", e)
+        return jsonify({"success": False, "error": str(e)})
 
 @app.route('/user_login', methods=["GET", "POST"])
 def user_login():
@@ -304,7 +382,33 @@ def delete_chat_history():
     
     return jsonify({"message": "Chat session deleted successfully."})
 
+@app.route('/google_login')
+def google_login():
+    # Redirect user to Google's OAuth consent page.
+    redirect_uri = url_for('google_authorize', _external=True)
+    return google.authorize_redirect(redirect_uri)
 
+@app.route('/google_authorize')
+def google_authorize():
+    # Handle the callback from Google
+    token = google.authorize_access_token()
+    resp = google.get('userinfo')
+    user_info = resp.json()
+    email = user_info.get('email')
+    
+    # Check if the user exists; if not, create one.
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        # Creating a user for Google login: username is set as email.
+        # A random password is generated since our model requires one.
+        random_password = os.urandom(16).hex()
+        user = User(username=email, email=email)
+        user.set_password(random_password)
+        db.session.add(user)
+        db.session.commit()
+    
+    login_user(user)
+    return redirect(url_for('index'))
 
 
 if __name__ == "__main__":
