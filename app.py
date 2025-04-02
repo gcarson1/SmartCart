@@ -90,6 +90,7 @@ class ChatSession(db.Model):
     __tablename__ = 'chat_sessions'
     session_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.store_id'), nullable=True)  # New field
     title = db.Column(db.String(255), default='New Chat')
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
@@ -159,8 +160,19 @@ def index():
 @app.route("/new_chat", methods=["POST"])
 @login_required
 def new_chat():
-    title = request.json.get("title", "New Chat")
-    new_session = ChatSession(user_id=current_user.user_id, title=title)
+    data = request.get_json() or {}
+    store_id = data.get("store_id")  # Capture the selected store_id from the client
+    if store_id:
+        # Count existing sessions for this user and store
+        count = ChatSession.query.filter_by(user_id=current_user.user_id, store_id=store_id).count()
+        # Retrieve the store name from the Store model
+        store = Store.query.get(store_id)
+        store_name = store.name if store else "Store"
+        title = f"{store_name} Chat {count + 1}"
+    else:
+        title = "New Chat"
+        
+    new_session = ChatSession(user_id=current_user.user_id, title=title, store_id=store_id)
     db.session.add(new_session)
     db.session.commit()
     return jsonify({"session_id": new_session.session_id, "title": new_session.title})
@@ -172,6 +184,7 @@ def chat_sessions():
     session_list = [{
         "session_id": s.session_id,
         "title": s.title,
+        "store_id": s.store_id,  # add this line
         "created_at": s.created_at.isoformat()
     } for s in sessions]
     return jsonify(session_list)
@@ -210,17 +223,23 @@ def run_assistant_for_store(assistant_id, user_input):
 
 
 @app.route("/get", methods=["POST"])
-@login_required
 def get_bot_response():
+    print("⚠️ Assistant ID not found in OpenAI. Make sure it exists or update your .env file.")
+
     data = request.get_json() or {}
     user_input = data.get('msg')
     session_id = data.get('session_id')
-    store_id = data.get('store_id')
+
     if not session_id:
         return jsonify({'error': 'No session id provided.'}), 400
     if not user_input:
         return jsonify({'error': 'No message provided.'}), 400
 
+    # Retrieve the chat session and its associated store
+    session_obj = ChatSession.query.filter_by(session_id=session_id, user_id=current_user.user_id).first()
+    store_id = session_obj.store_id if session_obj else None
+
+    # Save the user's message
     user_message = ChatMessage(
         session_id=session_id,
         user_id=current_user.user_id,
@@ -230,12 +249,17 @@ def get_bot_response():
     db.session.add(user_message)
     db.session.commit()
 
-    store = Store.query.get(store_id)
-    if not store or not store.assistant_id:
-        return jsonify({'error': 'Selected store is invalid or has no assistant set up.'}), 400
+    # Use the store's assistant if store_id exists; otherwise, fall back to the generic assistant.
+    if store_id:
+        store = Store.query.get(store_id)
+        if store and store.assistant_id:
+            bot_response = run_assistant_for_store(store.assistant_id, user_input)
+        else:
+            bot_response = run_assistant(user_input)
+    else:
+        bot_response = run_assistant(user_input)
 
-    bot_response = run_assistant_for_store(store.assistant_id, user_input)
-
+    # Save the bot's response
     bot_message = ChatMessage(
         session_id=session_id,
         user_id=current_user.user_id,
@@ -246,7 +270,6 @@ def get_bot_response():
     db.session.commit()
 
     return jsonify({'response': bot_response})
-
 
 @app.route('/admin_signup', methods=["GET", "POST"])
 def admin_signup():
@@ -650,6 +673,4 @@ def google_authorize():
 if __name__ == "__main__":
     if not get_existing_assistant():
         print("⚠️ Assistant ID not found in OpenAI. Make sure it exists or update your .env file.")
-    if not get_existing_vector_store():
-        print("⚠️ Vector Store ID not found in OpenAI. Make sure it exists or update your .env file.")
     app.run(debug=True)

@@ -73,18 +73,19 @@
     /* Dropdown panel styling */
     .avatar-dropdown {
       position: absolute;
-      top: 60px;
-      right: 20px;
+      top: 53px;
+      right: 0;
       background: #fff;
-      border: 1px solid #ccc;
-      box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
-      padding: 10px;
+      box-shadow: 0px 2px 5px rgba(28, 28, 28, 0.3);
+      padding: 12px;
+      width: 140px;
       display: none;
       z-index: 1000;
     }
     /* When the dropdown is toggled, display it as a flex container */
     .avatar-dropdown.show {
       display: flex;
+      flex-direction: column;
     }
     .dropdown-btn {
       background: none;
@@ -336,11 +337,13 @@
       <div id="settings-dropdown" class="avatar-dropdown flex-column">
         {% if not current_user.is_authenticated %}
           <button onclick="window.location.href='/user_login'" class="dropdown-btn">User Sign In</button>
+      <hr>
           <button onclick="window.location.href='/admin_login'" class="dropdown-btn">Admin Sign In</button>
         {% elif current_user.is_authenticated and not current_user.is_admin %}
           <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
         {% elif current_user.is_authenticated and current_user.is_admin %}
           <button onclick="window.location.href='/admin_panel'" class="dropdown-btn">Admin Dashboard</button>
+          <hr>
           <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
         {% endif %}
       </div>
@@ -386,35 +389,18 @@
         </li>
       </div>
     </div>
-    <!-- RIGHT COLUMN: Stores & Grocery Lists -->
-    <div class="right-column">
-      <div class="header">Stores</div>
-      <div class="stores-lists">
-        {% if current_user.is_authenticated %}
-          <div class="store-item">
-            <label for="storeSelect">Select a store:</label>
-            <select id="storeSelect" class="form-control"></select>
-          </div>
-        {% else %}
-          <div class="text-center">
-            <button onclick="window.location.href='/user_login'" class="btn btn-primary">
-              Sign In
-            </button>
-          </div>
-        {% endif %}
-      </div>
-    </div>
   </div>
   
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
   <!-- Chat, Session, and Dropdown Logic -->
   <script>
     // Global variable for the current session id
     var currentSessionId = null;
     var selectedStoreID = null;
-    
+
     // Message constructor for chat messages
     var Message = function(arg) {
       this.text = arg.text;
@@ -438,9 +424,10 @@
           createNewChat();
         } else {
           data.forEach(function(session) {
-            var $sessionItem = $('<div class="chat-list-item" data-session-id="' + session.session_id + '"><div class="avatar"></div><div class="chat-info"><div class="chat-name">' + session.title + '</div><div class="chat-snippet">Last message snippet...</div></div></div>');
+            var $sessionItem = $('<div class="chat-list-item" data-session-id="' + session.session_id + '" data-store-id="' + session.store_id + '"><div class="avatar"></div><div class="chat-info"><div class="chat-name">' + session.title + '</div><div class="chat-snippet">' + session.snippet + '</div></div></div>');
             $chatList.append($sessionItem);
           });
+
           if (!currentSessionId) {
             currentSessionId = data[0].session_id;
             loadChatHistory(currentSessionId);
@@ -455,7 +442,7 @@
         url: "/new_chat",
         method: "POST",
         contentType: "application/json",
-        data: JSON.stringify({ title: "New Chat" }),
+        data: JSON.stringify({ title: "New Chat", store_id: selectedStoreId }),
         success: function(data) {
           currentSessionId = data.session_id;
           loadChatSessions();
@@ -466,39 +453,45 @@
         }
       });
     }
+
     
-    // Load chat history for a specific session
     function loadChatHistory(sessionId) {
-      $.getJSON("/chat_history", { session_id: sessionId }, function(data) {
+    if (!sessionId || sessionId === "undefined") {
+        console.error("Invalid session id:", sessionId);
+        return;
+    }
+    $.getJSON("/chat_history", { session_id: sessionId }, function(data) {
         var $messages = $('.messages');
         $messages.empty();
         if (data.length === 0) {
-          var initialMsg = new Message({ text: 'How can I help you today?', message_side: 'left' });
-          initialMsg.draw();
+            var initialMsg = new Message({ text: 'How can I help you today?', message_side: 'left' });
+            initialMsg.draw();
         } else {
-          data.forEach(function(msg) {
-            var side = (msg.sender === 'user') ? 'right' : 'left';
-            var message = new Message({ text: msg.message, message_side: side });
-            message.draw();
-          });
+            data.forEach(function(msg) {
+                var side = (msg.sender === 'user') ? 'right' : 'left';
+                var message = new Message({ text: msg.message, message_side: side });
+                message.draw();
+            });
         }
         $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
-      });
-    }
+    });
+}
+
     
     function loadStores() {
-      $.getJSON("/stores", function(data) {
-        var $storeSelect = $("#storeSelect");
-        $storeSelect.empty();
-        $storeSelect.append($("<option>", { value: "", text: "Choose a store..." }));
+    $.getJSON("/stores", function(data) {
+        window.globalStores = data; // store globally for lookup
+        var $modalSelect = $("#modalStoreSelect");
+        $modalSelect.empty();
+        $modalSelect.append($("<option>", { value: "", text: "Choose a store..." }));
         data.forEach(function(store) {
-          $storeSelect.append($("<option>", { 
-            value: store.store_id, 
-            text: store.name 
-          }));
+            $modalSelect.append($("<option>", { 
+                value: store.store_id, 
+                text: store.name 
+            }));
         });
-      });
-    }
+    });
+}
 
     // Send a message in the current session
     function sendMessage(text) {
@@ -577,16 +570,30 @@
       });
       
       $('#new_chat_btn').click(function() {
-        createNewChat();
+    // Open the modal for store selection
+        $('#storeSelectionModal').modal('show');
       });
+
       
       loadChatSessions();
       
       $(document).on('click', '.chat-list-item', function() {
-        currentSessionId = $(this).data('session-id');
-        loadChatHistory(currentSessionId);
-      });
-      
+    currentSessionId = $(this).data('session-id');
+    var storeId = $(this).data('store-id');
+    if (storeId) {
+        // Lookup the store name from the global stores array
+        var store = window.globalStores.find(function(s) {
+            return s.store_id == storeId;
+        });
+        var storeName = store ? store.name : "Undefined";
+        $(".top_menu .title").text("Smart Cart - " + storeName);
+    } else {
+        $(".top_menu .title").text("Smart Cart");
+    }
+    loadChatHistory(currentSessionId);
+});
+
+
       $('.send_message').click(function() {
         sendMessage($('.message_input').val());
       });
@@ -639,7 +646,59 @@
         }
       });
 
+      $("#createChatWithStore").click(function() {
+    var storeId = $("#modalStoreSelect").val();
+    if (!storeId) {
+        alert("Please select a store.");
+        return;
+    }
+    // Get the store name from the selected option.
+    var storeName = $("#modalStoreSelect option:selected").text();
+    // Update the header with the selected store's name.
+    $(".top_menu .title").text("Smart Cart - " + storeName);
+    
+    // Set the global variable for the new chat creation.
+    selectedStoreId = storeId;
+    createNewChat();
+    $('#storeSelectionModal').modal('hide');
+  });
+
     });
   </script>
+  {% if not current_user.is_authenticated %}
+  <script>
+    $(document).ready(function() {
+      var $messages = $('.messages');
+      $messages.empty();
+      var defaultMsg = new Message({
+        text: "To get help around your favorite stores log-in and start a new chat!",
+        message_side: "left"
+      });
+      defaultMsg.draw();
+    });
+  </script>
+  {% endif %}
+  <!-- Store Selection Modal -->
+<div class="modal fade" id="storeSelectionModal" tabindex="-1" role="dialog" aria-labelledby="storeSelectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="storeSelectionModalLabel">Select a Store</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <select id="modalStoreSelect" class="form-control">
+          <option value="">Choose a store...</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="createChatWithStore" class="btn btn-primary">Create Chat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
