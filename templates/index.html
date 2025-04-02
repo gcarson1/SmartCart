@@ -451,7 +451,7 @@
         url: "/new_chat",
         method: "POST",
         contentType: "application/json",
-        data: JSON.stringify({ title: "New Chat", store_id: selectedStoreId }),
+        data: JSON.stringify({ title: "New Chat", store_id: selectedStoreID }),
         success: function(data) {
           currentSessionId = data.session_id;
           loadChatSessions();
@@ -516,7 +516,7 @@
         data: JSON.stringify({
           msg: text,
           session_id: currentSessionId,
-          store_id: selectedStoreId
+          store_id: selectedStoreID
         }),
         success: function(data) {
           var botMsg = new Message({ text: data.response, message_side: "left" });
@@ -637,8 +637,8 @@
       loadStores();
 
       $("#storeSelect").change(function() {
-        selectedStoreId = $(this).val();
-        console.log("User selected store ID:", selectedStoreId);
+        selectedStoreID = $(this).val();
+        console.log("User selected store ID:", selectedStoreID);
       });
 
       $(".send_message").click(function() {
@@ -663,7 +663,7 @@
         $(".top_menu .title").text("Smart Cart - " + storeName);
         
         // Set the global variable for the new chat creation.
-        selectedStoreId = storeId;
+        selectedStoreID = storeId;
         createNewChat();
         $('#storeSelectionModal').modal('hide');
       });
