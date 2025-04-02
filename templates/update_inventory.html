@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Update Inventory - Smart Cart</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    body { padding-top: 50px; }
+    .container { max-width: 600px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Update Inventory File</h2>
+    {% if message %}
+      <div class="alert alert-info">{{ message }}</div>
+    {% endif %}
+    <form method="POST" action="/update_inventory" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="txtFile">Select New Inventory File (TXT):</label>
+        <input type="file" id="txtFile" name="txtFile" accept=".txt" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Update Inventory</button>
+      <a href="/admin_panel" class="btn btn-secondary">Back to Dashboard</a>
+    </form>
+  </div>
+</body>
+</html>

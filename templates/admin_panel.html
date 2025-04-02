@@ -54,7 +54,6 @@
       <a href="/" class="main-return">
         <img src="static/main-return.png" alt="Return to main page" />
       </a>
-      <div class="avatar"></div>
     </div>
   </div>
 
@@ -116,7 +115,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Save Store Information</button>
       </form>
-      {% elif store and not store.has_assistant %}
+      {% elif store and not store.inventory_file_id %}
       <!-- File Upload Form -->
       <h2>Upload Inventory File</h2>
       {% if message %}
@@ -172,7 +171,8 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          document.querySelector(".message").innerHTML = '<span class="success">' + data.message + '</span>';
+          // On success, redirect back to the admin panel dashboard
+          window.location.href = '/admin_panel';
         } else {
           document.querySelector(".message").innerHTML = '<span class="error">' + data.error + '</span>';
         }

@@ -37,13 +37,21 @@
       z-index: 100;
     }
     .top_menu .title {
-      font-size: 18px;
-      font-weight: 600;
-    }
-    .top_menu .user_info {
-      display: flex;
-      align-items: center;
-    }
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 21px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.top_menu .user_info {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
     .top_menu .user_info .name {
       margin-right: 10px;
       font-weight: 500;
@@ -74,8 +82,9 @@
       display: none;
       z-index: 1000;
     }
+    /* When the dropdown is toggled, display it as a flex container */
     .avatar-dropdown.show {
-      display: block;
+      display: flex;
     }
     .dropdown-btn {
       background: none;
@@ -266,7 +275,7 @@
     }
     /* Right Column: Stores & Grocery Lists */
     .right-column {
-      width: 25%;
+      width: 20%;
       background-color: #f9fdff;
       border-left: 1px solid #e0e0e0;
       display: flex;
@@ -309,26 +318,32 @@
 <body>
   <!-- Top Bar -->
   <div class="top_menu">
-    <div class="title">Smart Cart</div>
-    <div class="user_info">
-      {% if current_user.is_authenticated and current_user.is_admin %}
-        <a href="/admin_panel" class="admin-avatar">
+    <div class="title">
+      {% if current_user.is_authenticated %}
+        Smart Cart - {{ currStoreName }}
       {% else %}
-        <a href="/admin_login" class="admin-avatar">
+        Welcome to Smart Cart
       {% endif %}
-            <img src="static/admin-image.png" alt="Admin Panel" />
-        </a>
-      <!-- Clickable Avatar for dropdown -->
-      <div class="avatar" id="user-avatar" style="cursor: pointer;"></div>
-      <!-- Dropdown panel -->
-      <div id="avatar-dropdown" class="avatar-dropdown">
-        {% if current_user.is_authenticated %}
+    </div>
+    
+    <div class="user_info">
+      <!-- Standalone settings button using a gear icon, styled to be larger and white -->
+      <button id="settings-btn" style="background: none; border: none; cursor: pointer; font-size: 30px; color: #fff;">
+        <i class="fas fa-cog"></i>
+      </button>
+      <!-- Dropdown panel for sign in/sign out/admin options -->
+      <!-- Removed "d-flex" from here -->
+      <div id="settings-dropdown" class="avatar-dropdown flex-column">
+        {% if not current_user.is_authenticated %}
+          <button onclick="window.location.href='/user_login'" class="dropdown-btn">User Sign In</button>
+          <button onclick="window.location.href='/admin_login'" class="dropdown-btn">Admin Sign In</button>
+        {% elif current_user.is_authenticated and not current_user.is_admin %}
           <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
-        {% else %}
-          <button onclick="window.location.href='/user_login'" class="dropdown-btn">Sign In</button>
+        {% elif current_user.is_authenticated and current_user.is_admin %}
+          <button onclick="window.location.href='/admin_panel'" class="dropdown-btn">Admin Dashboard</button>
+          <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
         {% endif %}
       </div>
-    </div>
     </div>
   </div>
   
@@ -361,7 +376,6 @@
         <div class="send_message">
           <i class="fas fa-paper-plane"></i>
         </div>
-        
       </div>
       <div class="message_template">
         <li class="message">
@@ -374,15 +388,20 @@
     </div>
     <!-- RIGHT COLUMN: Stores & Grocery Lists -->
     <div class="right-column">
-      <div class="header">Stores & Grocery Lists</div>
+      <div class="header">Stores</div>
       <div class="stores-lists">
-        <div class="store-item">
-          <label for="storeSelect">Select a store:</label>
-          <select id="storeSelect" class="form-control"></select>
-        </div>
-        
-        <hr />
-        
+        {% if current_user.is_authenticated %}
+          <div class="store-item">
+            <label for="storeSelect">Select a store:</label>
+            <select id="storeSelect" class="form-control"></select>
+          </div>
+        {% else %}
+          <div class="text-center">
+            <button onclick="window.location.href='/user_login'" class="btn btn-primary">
+              Sign In
+            </button>
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -409,7 +428,7 @@
         }, 0);
       };
     };
-    
+
     // Load chat sessions for the user
     function loadChatSessions() {
       $.getJSON("/chat_sessions", function(data) {
@@ -468,50 +487,86 @@
     }
     
     function loadStores() {
-    $.getJSON("/stores", function(data) {
-      var $storeSelect = $("#storeSelect");
-      $storeSelect.empty();
-      $storeSelect.append($("<option>", { value: "", text: "Choose a store..." }));
-      data.forEach(function(store) {
-        // store_id and store.name come from the JSON route
-        $storeSelect.append($("<option>", { 
-          value: store.store_id, 
-          text: store.name 
-        }));
+      $.getJSON("/stores", function(data) {
+        var $storeSelect = $("#storeSelect");
+        $storeSelect.empty();
+        $storeSelect.append($("<option>", { value: "", text: "Choose a store..." }));
+        data.forEach(function(store) {
+          $storeSelect.append($("<option>", { 
+            value: store.store_id, 
+            text: store.name 
+          }));
+        });
       });
-    });
-  }
-
+    }
 
     // Send a message in the current session
     function sendMessage(text) {
-    if (text.trim() === "") return;
-    $(".message_input").val("");
-    var $messages = $(".messages");
-    var userMsg = new Message({ text: text, message_side: "right" });
-    userMsg.draw();
-    $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
+      if (text.trim() === "") return;
+      $(".message_input").val("");
+      var $messages = $(".messages");
+      var userMsg = new Message({ text: text, message_side: "right" });
+      userMsg.draw();
+      $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
 
-    $.ajax({
-      url: "/get",
-      method: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({
-        msg: text,
-        session_id: currentSessionId,
-        store_id: selectedStoreId   // <----- new
-      }),
-      success: function(data) {
-        var botMsg = new Message({ text: data.response, message_side: "left" });
-        botMsg.draw();
-        $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
-      },
-      error: function() {
-        console.error("Failed to send message");
-      }
-    });
-  }
+      $.ajax({
+    url: "/get",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({
+      msg: text,
+      session_id: currentSessionId,
+      store_id: selectedStoreId
+    }),
+    success: function(data) {
+      var botMsg = new Message({ text: data.response, message_side: "left" });
+      botMsg.draw();
+      $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
+    },
+    error: function() {
+      console.error("Failed to send message");
+    }
+  });
+    }
+    // Dropdown logic for settings and avatar   
     
+    $(function() {
+      $('#settings-btn').click(function(event) {
+        $('#settings-dropdown').toggleClass('show');
+        event.stopPropagation();
+      });
+      
+      $(document).click(function() {
+        $('#settings-dropdown').removeClass('show');
+      });
+      
+      $('#settings-dropdown button').on('click', function(e) {
+        var targetUrl = $(this).data('target');
+        $('#settings-dropdown').removeClass('show');
+        if (targetUrl) {
+          e.preventDefault();
+          setTimeout(function() {
+            window.location.href = targetUrl;
+          }, 100);
+        }
+    });
+
+      $('#avatar-dropdown').on('click', function(event) {
+        event.stopPropagation();
+      });
+      
+      $('#avatar-dropdown button').on('click', function(e) {
+        var targetUrl = $(this).data('target');
+        $('#avatar-dropdown').removeClass('show');
+        if (targetUrl) {
+          e.preventDefault();
+          setTimeout(function() {
+            window.location.href = targetUrl;
+          }, 100);
+        }
+      });
+    });
+
     $(function() {
       $('#user-avatar').click(function(event) {
         $('#avatar-dropdown').toggleClass('show');
@@ -567,12 +622,12 @@
       });
 
       loadChatSessions();
-      loadStores();  // load store list from the new route
+      loadStores();
 
       $("#storeSelect").change(function() {
-        selectedStoreId = $(this).val();
-        console.log("User selected store ID:", selectedStoreId);
-      });
+  selectedStoreId = $(this).val();
+  console.log("User selected store ID:", selectedStoreId);
+});
 
       $(".send_message").click(function() {
         sendMessage($(".message_input").val());
@@ -585,9 +640,6 @@
       });
 
     });
-
-    
-
   </script>
 </body>
 </html>

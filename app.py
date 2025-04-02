@@ -61,7 +61,6 @@ class Store(db.Model):
     state = db.Column(db.String(255), nullable=False)
     zip_code = db.Column(db.String(20), nullable=False)
     inventory_file_id = db.Column(db.String(255))
-    has_assistant = db.Column(db.Boolean, default=False)
     assistant_id = db.Column(db.String(255))
     vector_store_id = db.Column(db.String(255))
 
@@ -71,7 +70,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
     email = db.Column(db.String(255), unique=True)
-    is_admin = db.Column(db.Boolean, default=False)  # New field
+    is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     def get_id(self):
@@ -87,7 +86,6 @@ class User(UserMixin, db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# New Model: ChatSession to track each conversation
 class ChatSession(db.Model):
     __tablename__ = 'chat_sessions'
     session_id = db.Column(db.Integer, primary_key=True)
@@ -95,7 +93,6 @@ class ChatSession(db.Model):
     title = db.Column(db.String(255), default='New Chat')
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-# Updated ChatMessage model with session reference
 class ChatMessage(db.Model):
     __tablename__ = 'chat_messages'
     message_id = db.Column(db.Integer, primary_key=True)
@@ -159,7 +156,6 @@ def run_assistant(user_input):
 def index():
     return render_template("index.html")
 
-# New Route: Create a new chat session
 @app.route("/new_chat", methods=["POST"])
 @login_required
 def new_chat():
@@ -169,7 +165,6 @@ def new_chat():
     db.session.commit()
     return jsonify({"session_id": new_session.session_id, "title": new_session.title})
 
-# New Route: Get list of chat sessions for the logged in user
 @app.route("/chat_sessions", methods=["GET"])
 @login_required
 def chat_sessions():
@@ -181,7 +176,6 @@ def chat_sessions():
     } for s in sessions]
     return jsonify(session_list)
 
-# Updated Route: Get chat history for a specific session
 @app.route("/chat_history", methods=["GET"])
 @login_required
 def chat_history():
@@ -210,7 +204,6 @@ def run_assistant_for_store(assistant_id, user_input):
         if block.type == "text":
             response_text += block.text.value
 
-    # strip out doc-source markers if necessary
     pattern = r'【\d+†source】'
     response_text = re.sub(pattern, '', response_text)
     return response_text
@@ -222,13 +215,12 @@ def get_bot_response():
     data = request.get_json() or {}
     user_input = data.get('msg')
     session_id = data.get('session_id')
-    store_id = data.get('store_id')  # new
+    store_id = data.get('store_id')
     if not session_id:
         return jsonify({'error': 'No session id provided.'}), 400
     if not user_input:
         return jsonify({'error': 'No message provided.'}), 400
 
-    # Save the user's message
     user_message = ChatMessage(
         session_id=session_id,
         user_id=current_user.user_id,
@@ -238,15 +230,12 @@ def get_bot_response():
     db.session.add(user_message)
     db.session.commit()
 
-    # Retrieve the store’s assistant ID
     store = Store.query.get(store_id)
     if not store or not store.assistant_id:
         return jsonify({'error': 'Selected store is invalid or has no assistant set up.'}), 400
 
-    # Generate bot response using this specific store's assistant
     bot_response = run_assistant_for_store(store.assistant_id, user_input)
 
-    # Save the bot's response
     bot_message = ChatMessage(
         session_id=session_id,
         user_id=current_user.user_id,
@@ -289,18 +278,13 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        # Fetch the user with the matching username and admin flag
         admin = User.query.filter_by(username=username, is_admin=True).first()
-        # Use check_password to compare the entered password with the hashed password
         if not admin or not admin.check_password(password):
             error = "Invalid credentials or not an admin user."
             return render_template('admin_login.html', error=error)
-        # Log the admin in (if using Flask-Login)
         login_user(admin)
         return redirect('/admin_panel')
     return render_template('admin_login.html', error=error)
-
-
 
 @app.route('/refresh')
 def refresh():
@@ -323,16 +307,13 @@ def list_stores():
             "store_id": s.store_id,
             "name": s.name,
             "address": s.address,
-            "assistant_id": s.assistant_id  # If you need to see it in front-end
+            "assistant_id": s.assistant_id
         })
     return jsonify(results)
 
-
 def create_dynamic_assistant(txt_file):
-    # Ensure the file pointer is at the start
     txt_file.seek(0)
     try:
-        # Step 1: Upload the text file using the underlying stream
         uploaded_file = client.files.create(
             file=(txt_file.filename, txt_file.stream, "text/plain"),
             purpose="assistants"
@@ -342,7 +323,6 @@ def create_dynamic_assistant(txt_file):
         raise Exception(f"Failed to upload file: {e}")
 
     try:
-        # Step 2: Create a new vector store and attach the uploaded file via its file ID.
         vector_store = client.beta.vector_stores.create(
             name=f"Dynamic Vector Store {int(time.time())}",
             file_ids=[uploaded_file.id]
@@ -353,7 +333,6 @@ def create_dynamic_assistant(txt_file):
         raise Exception(f"Failed to create vector store: {e}")
 
     try:
-        # Step 3: Create a new assistant with file_search enabled and attach the vector store.
         assistant = client.beta.assistants.create(
             name=f"Dynamic Assistant {int(time.time())}",
             instructions="You are a helpful assistant that uses file search to answer questions based on the uploaded document.",
@@ -368,17 +347,15 @@ def create_dynamic_assistant(txt_file):
     except Exception as e:
         raise Exception(f"Failed to create dynamic assistant: {e}")
 
-    # Return the assistant ID, vector store ID, and the uploaded file's ID.
     return new_assistant_id, new_vector_store_id, uploaded_file.id
 
 @app.route('/admin_panel', methods=["GET", "POST"])
 @login_required
 def admin_panel():
-    # Check if the current admin has a store record.
     store = Store.query.filter_by(user_id=current_user.user_id).first()
     message = None
     
-    # Step 1: Store Info Setup
+    # Step 1: If no store exists, show the Store Info Form.
     if not store:
         if request.method == "POST" and 'name' in request.form:
             name = request.form.get("name")
@@ -403,30 +380,143 @@ def admin_panel():
                 store = new_store
         return render_template("admin_panel.html", message=message, store=store)
     
-    # Step 2: File Upload for Inventory
-    if store and not store.has_assistant:
+    # Step 2: If store exists but no inventory file is present, handle file upload.
+    if not store.inventory_file_id:
         if request.method == "POST" and 'txtFile' in request.files:
             txt_file = request.files.get("txtFile")
             if txt_file:
                 try:
                     txt_file.seek(0)
-                    new_assistant_id, new_vector_store_id, uploaded_file_id = create_dynamic_assistant(txt_file)
-                    # Update store record with the new file ID and mark assistant as active.
-                    store.inventory_file_id = uploaded_file_id
-                    store.has_assistant = True
+                    # Check if an assistant already exists for the store.
+                    if store.assistant_id:
+                        # Upload the new file.
+                        uploaded_file = client.files.create(
+                            file=(txt_file.filename, txt_file.stream, "text/plain"),
+                            purpose="assistants"
+                        )
+                        new_file_id = uploaded_file.id
+                        print(f"Uploaded new file, id: {new_file_id}")
+                        
+                        # Create a new vector store using the new file.
+                        vector_store = client.beta.vector_stores.create(
+                            name=f"Dynamic Vector Store {int(time.time())}",
+                            file_ids=[new_file_id]
+                        )
+                        new_vector_store_id = vector_store.id
+                        print(f"Created new vector store with ID: {new_vector_store_id}")
+                        
+                        # Update the existing assistant to use the new vector store.
+                        client.beta.assistants.update(
+                            store.assistant_id,
+                            tool_resources={"file_search": {"vector_store_ids": [new_vector_store_id]}}
+                        )
+                        new_assistant_id = store.assistant_id
+                        print(f"Updated existing assistant {new_assistant_id} with new vector store.")
+                    else:
+                        # No assistant exists, so create one.
+                        new_assistant_id, new_vector_store_id, new_file_id = create_dynamic_assistant(txt_file)
+                    
+                    # Update the store record with new file and vector store info.
+                    store.inventory_file_id = new_file_id
+                    store.vector_store_id = new_vector_store_id
+                    store.assistant_id = new_assistant_id  # preserves existing assistant if present
                     db.session.commit()
-                    message = f"Assistant created. Inventory File ID: {uploaded_file_id}"
+                    message = f"Inventory updated. New File ID: {new_file_id}"
                 except Exception as e:
-                    message = f"Error creating dynamic assistant: {str(e)}"
+                    message = f"Error updating inventory: {str(e)}"
             else:
                 message = "No file selected."
         return render_template("admin_panel.html", message=message, store=store)
     
-    # Step 3: Assistant is active; show deletion form
+    # Step 3: If store has an inventory file, show the dashboard view.
     return render_template("admin_panel.html", message=message, store=store)
 
+@app.route('/update_inventory', methods=["GET", "POST"])
+@login_required
+def update_inventory():
+    store = Store.query.filter_by(user_id=current_user.user_id).first()
+    if not store:
+        return redirect(url_for('admin_panel'))
+    
+    message = None
+    if request.method == "POST":
+        if 'txtFile' not in request.files:
+            message = "No file selected."
+        else:
+            txt_file = request.files.get("txtFile")
+            if txt_file:
+                try:
+                    # If an old file exists, try to delete it.
+                    if store.inventory_file_id:
+                        try:
+                            client.files.delete(store.inventory_file_id)
+                        except Exception as e:
+                            print(f"Error deleting old file: {e}")
+                    
+                    # Create new file in OpenAI
+                    txt_file.seek(0)
+                    try:
+                        uploaded_file = client.files.create(
+                            file=(txt_file.filename, txt_file.stream, "text/plain"),
+                            purpose="assistants"
+                        )
+                        new_file_id = uploaded_file.id
+                        print(f"Uploaded new file, id: {new_file_id}")
+                    except Exception as e:
+                        raise Exception(f"Failed to upload file: {e}")
+                    
+                    # Create a new vector store with the new file
+                    try:
+                        vector_store = client.beta.vector_stores.create(
+                            name=f"Dynamic Vector Store {int(time.time())}",
+                            file_ids=[new_file_id]
+                        )
+                        new_vector_store_id = vector_store.id
+                        print(f"Created new vector store with ID: {new_vector_store_id}")
+                    except Exception as e:
+                        raise Exception(f"Failed to create vector store: {e}")
+                    
+                    # If an assistant already exists, update its tool_resources;
+                    # otherwise, create a new assistant.
+                    if store.assistant_id:
+                        try:
+                            client.beta.assistants.update(
+                                store.assistant_id,
+                                tool_resources={"file_search": {"vector_store_ids": [new_vector_store_id]}}
+                            )
+                            new_assistant_id = store.assistant_id
+                            print(f"Updated existing assistant {new_assistant_id} with new vector store.")
+                        except Exception as e:
+                            print(f"Error updating assistant: {e}")
+                            new_assistant_id = store.assistant_id
+                    else:
+                        try:
+                            assistant = client.beta.assistants.create(
+                                name=f"Dynamic Assistant {int(time.time())}",
+                                instructions="You are a helpful assistant that uses file search to answer questions based on the uploaded document.",
+                                model="gpt-4o-mini",
+                                tools=[{"type": "file_search"}],
+                                tool_resources={"file_search": {"vector_store_ids": [new_vector_store_id]}}
+                            )
+                            new_assistant_id = assistant.id
+                            print(f"Created new assistant with ID: {new_assistant_id}")
+                        except Exception as e:
+                            raise Exception(f"Failed to create dynamic assistant: {e}")
+                    
+                    # Update the store record with the new file and vector store IDs.
+                    store.inventory_file_id = new_file_id
+                    store.vector_store_id = new_vector_store_id
+                    # Preserve the existing assistant_id if it exists.
+                    store.assistant_id = new_assistant_id  
+                    db.session.commit()
+                    
+                    message = f"Inventory updated. New File ID: {new_file_id}"
+                except Exception as e:
+                    message = f"Error updating inventory: {str(e)}"
+            else:
+                message = "No file selected."
+    return render_template("update_inventory.html", message=message, store=store)
 
-# New endpoint: Delete an uploaded file from vector store
 @app.route('/delete_uploaded_file', methods=["POST"])
 def delete_uploaded_file():
     data = request.get_json() or {}
@@ -434,12 +524,34 @@ def delete_uploaded_file():
     if not file_id:
         return jsonify({"error": "No file id provided."}), 400
     try:
-        # Delete the file from OpenAI (this removes it from all vector store associations)
         deletion_result = client.files.delete(file_id)
-        return jsonify({"success": True, "message": "File deleted from vector store.", "result": deletion_result})
     except Exception as e:
-        print("Error deleting file:", e)
-        return jsonify({"success": False, "error": str(e)})
+        error_message = str(e)
+        if "No such File object" in error_message:
+            deletion_result = {"message": "File not found; treating as deleted."}
+        else:
+            print("Error deleting file:", e)
+            return jsonify({"success": False, "error": error_message})
+    
+    store = Store.query.filter_by(inventory_file_id=file_id).first()
+    if store:
+        # If a vector store exists, delete it too.
+        if store.vector_store_id:
+            try:
+                client.beta.vector_stores.delete(store.vector_store_id)
+            except Exception as e:
+                print("Error deleting vector store:", e)
+        # Clear the file and vector store IDs from the store record.
+        store.inventory_file_id = None
+        store.vector_store_id = None
+        db.session.commit()
+    
+    return jsonify({
+        "success": True,
+        "message": "File and associated vector store deleted, store record updated.",
+        "result": deletion_result
+    })
+
 
 @app.route('/user_login', methods=["GET", "POST"])
 def user_login():
@@ -502,14 +614,11 @@ def delete_chat_history():
     except ValueError:
         return jsonify({"error": "Invalid session id provided."}), 400
 
-    # Retrieve the chat session for the current user
     session_to_delete = ChatSession.query.filter_by(session_id=session_id, user_id=current_user.user_id).first()
     if not session_to_delete:
         return jsonify({"message": "Chat session not found."}), 200
 
-    # Delete associated chat messages
     ChatMessage.query.filter_by(session_id=session_id, user_id=current_user.user_id).delete()
-    # Delete the session itself
     db.session.delete(session_to_delete)
     db.session.commit()
     
@@ -517,23 +626,18 @@ def delete_chat_history():
 
 @app.route('/google_login')
 def google_login():
-    # Redirect user to Google's OAuth consent page.
     redirect_uri = url_for('google_authorize', _external=True)
     return google.authorize_redirect(redirect_uri)
 
 @app.route('/google_authorize')
 def google_authorize():
-    # Handle the callback from Google
     token = google.authorize_access_token()
     resp = google.get('userinfo')
     user_info = resp.json()
     email = user_info.get('email')
     
-    # Check if the user exists; if not, create one.
     user = User.query.filter_by(email=email).first()
     if not user:
-        # Creating a user for Google login: username is set as email.
-        # A random password is generated since our model requires one.
         random_password = os.urandom(16).hex()
         user = User(username=email, email=email)
         user.set_password(random_password)
@@ -542,7 +646,6 @@ def google_authorize():
     
     login_user(user)
     return redirect(url_for('index'))
-
 
 if __name__ == "__main__":
     if not get_existing_assistant():
