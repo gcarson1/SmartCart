@@ -37,21 +37,20 @@
       z-index: 100;
     }
     .top_menu .title {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 21px;
-  font-weight: 600;
-  color: #fff;
-}
-
-.top_menu .user_info {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-}
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 21px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .top_menu .user_info {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
     .top_menu .user_info .name {
       margin-right: 10px;
       font-weight: 500;
@@ -165,6 +164,7 @@
       border-bottom: 1px solid #e0e0e0;
       font-size: 16px;
       font-weight: 500;
+      color: #7a7a7a;
       z-index: 1;
       height: 61px;
       position: relative;
@@ -259,9 +259,9 @@
     }
     .send_message {
       height: 90%;
-      background-color: #3a3a3a;
+      background-color: #7a7a7a;
       color: #f8f8f8;
-      border: 1px solid #000;
+      border: 1px solid #7e7e7e;
       border-radius: 4px;
       margin-bottom: 2px;
       padding: 4px 16px;
@@ -314,6 +314,16 @@
     .message_template {
       display: none;
     }
+
+    /* --- Custom Styles: Medium Gray for Plus icon, Garbage icon, and Header Texts --- */
+    .left-column .header,
+    .chat_window_header {
+      color: #7a7a7a;
+    }
+    .left-column .header i,
+    .chat_window_header i {
+      color: #7a7a7a;
+    }
   </style>
 </head>
 <body>
@@ -333,11 +343,10 @@
         <i class="fas fa-user"></i>
       </button>
       <!-- Dropdown panel for sign in/sign out/admin options -->
-      <!-- Removed "d-flex" from here -->
       <div id="settings-dropdown" class="avatar-dropdown flex-column">
         {% if not current_user.is_authenticated %}
           <button onclick="window.location.href='/user_login'" class="dropdown-btn">User Sign In</button>
-      <hr>
+          <hr>
           <button onclick="window.location.href='/admin_login'" class="dropdown-btn">Admin Sign In</button>
         {% elif current_user.is_authenticated and not current_user.is_admin %}
           <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
@@ -454,44 +463,42 @@
       });
     }
 
-    
     function loadChatHistory(sessionId) {
-    if (!sessionId || sessionId === "undefined") {
+      if (!sessionId || sessionId === "undefined") {
         console.error("Invalid session id:", sessionId);
         return;
-    }
-    $.getJSON("/chat_history", { session_id: sessionId }, function(data) {
+      }
+      $.getJSON("/chat_history", { session_id: sessionId }, function(data) {
         var $messages = $('.messages');
         $messages.empty();
         if (data.length === 0) {
-            var initialMsg = new Message({ text: 'How can I help you today?', message_side: 'left' });
-            initialMsg.draw();
+          var initialMsg = new Message({ text: 'How can I help you today?', message_side: 'left' });
+          initialMsg.draw();
         } else {
-            data.forEach(function(msg) {
-                var side = (msg.sender === 'user') ? 'right' : 'left';
-                var message = new Message({ text: msg.message, message_side: side });
-                message.draw();
-            });
+          data.forEach(function(msg) {
+            var side = (msg.sender === 'user') ? 'right' : 'left';
+            var message = new Message({ text: msg.message, message_side: side });
+            message.draw();
+          });
         }
         $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
-    });
-}
+      });
+    }
 
-    
     function loadStores() {
-    $.getJSON("/stores", function(data) {
+      $.getJSON("/stores", function(data) {
         window.globalStores = data; // store globally for lookup
         var $modalSelect = $("#modalStoreSelect");
         $modalSelect.empty();
         $modalSelect.append($("<option>", { value: "", text: "Choose a store..." }));
         data.forEach(function(store) {
-            $modalSelect.append($("<option>", { 
-                value: store.store_id, 
-                text: store.name 
-            }));
+          $modalSelect.append($("<option>", { 
+            value: store.store_id, 
+            text: store.name 
+          }));
         });
-    });
-}
+      });
+    }
 
     // Send a message in the current session
     function sendMessage(text) {
@@ -503,26 +510,26 @@
       $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
 
       $.ajax({
-    url: "/get",
-    method: "POST",
-    contentType: "application/json",
-    data: JSON.stringify({
-      msg: text,
-      session_id: currentSessionId,
-      store_id: selectedStoreId
-    }),
-    success: function(data) {
-      var botMsg = new Message({ text: data.response, message_side: "left" });
-      botMsg.draw();
-      $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
-    },
-    error: function() {
-      console.error("Failed to send message");
+        url: "/get",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+          msg: text,
+          session_id: currentSessionId,
+          store_id: selectedStoreId
+        }),
+        success: function(data) {
+          var botMsg = new Message({ text: data.response, message_side: "left" });
+          botMsg.draw();
+          $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
+        },
+        error: function() {
+          console.error("Failed to send message");
+        }
+      });
     }
-  });
-    }
+
     // Dropdown logic for settings and avatar   
-    
     $(function() {
       $('#settings-btn').click(function(event) {
         $('#settings-dropdown').toggleClass('show');
@@ -542,7 +549,7 @@
             window.location.href = targetUrl;
           }, 100);
         }
-    });
+      });
 
       $('#avatar-dropdown').on('click', function(event) {
         event.stopPropagation();
@@ -570,29 +577,27 @@
       });
       
       $('#new_chat_btn').click(function() {
-    // Open the modal for store selection
+        // Open the modal for store selection
         $('#storeSelectionModal').modal('show');
       });
 
-      
       loadChatSessions();
       
       $(document).on('click', '.chat-list-item', function() {
-    currentSessionId = $(this).data('session-id');
-    var storeId = $(this).data('store-id');
-    if (storeId) {
-        // Lookup the store name from the global stores array
-        var store = window.globalStores.find(function(s) {
+        currentSessionId = $(this).data('session-id');
+        var storeId = $(this).data('store-id');
+        if (storeId) {
+          // Lookup the store name from the global stores array
+          var store = window.globalStores.find(function(s) {
             return s.store_id == storeId;
-        });
-        var storeName = store ? store.name : "Undefined";
-        $(".top_menu .title").text("Smart Cart - " + storeName);
-    } else {
-        $(".top_menu .title").text("Smart Cart");
-    }
-    loadChatHistory(currentSessionId);
-});
-
+          });
+          var storeName = store ? store.name : "Undefined";
+          $(".top_menu .title").text("Smart Cart - " + storeName);
+        } else {
+          $(".top_menu .title").text("Smart Cart");
+        }
+        loadChatHistory(currentSessionId);
+      });
 
       $('.send_message').click(function() {
         sendMessage($('.message_input').val());
@@ -632,9 +637,9 @@
       loadStores();
 
       $("#storeSelect").change(function() {
-  selectedStoreId = $(this).val();
-  console.log("User selected store ID:", selectedStoreId);
-});
+        selectedStoreId = $(this).val();
+        console.log("User selected store ID:", selectedStoreId);
+      });
 
       $(".send_message").click(function() {
         sendMessage($(".message_input").val());
@@ -647,22 +652,21 @@
       });
 
       $("#createChatWithStore").click(function() {
-    var storeId = $("#modalStoreSelect").val();
-    if (!storeId) {
-        alert("Please select a store.");
-        return;
-    }
-    // Get the store name from the selected option.
-    var storeName = $("#modalStoreSelect option:selected").text();
-    // Update the header with the selected store's name.
-    $(".top_menu .title").text("Smart Cart - " + storeName);
-    
-    // Set the global variable for the new chat creation.
-    selectedStoreId = storeId;
-    createNewChat();
-    $('#storeSelectionModal').modal('hide');
-  });
-
+        var storeId = $("#modalStoreSelect").val();
+        if (!storeId) {
+          alert("Please select a store.");
+          return;
+        }
+        // Get the store name from the selected option.
+        var storeName = $("#modalStoreSelect option:selected").text();
+        // Update the header with the selected store's name.
+        $(".top_menu .title").text("Smart Cart - " + storeName);
+        
+        // Set the global variable for the new chat creation.
+        selectedStoreId = storeId;
+        createNewChat();
+        $('#storeSelectionModal').modal('hide');
+      });
     });
   </script>
   {% if not current_user.is_authenticated %}
@@ -679,26 +683,26 @@
   </script>
   {% endif %}
   <!-- Store Selection Modal -->
-<div class="modal fade" id="storeSelectionModal" tabindex="-1" role="dialog" aria-labelledby="storeSelectionModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="storeSelectionModalLabel">Select a Store</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <select id="modalStoreSelect" class="form-control">
-          <option value="">Choose a store...</option>
-        </select>
-      </div>
-      <div class="modal-footer">
-        <button type="button" id="createChatWithStore" class="btn btn-primary">Create Chat</button>
+  <div class="modal fade" id="storeSelectionModal" tabindex="-1" role="dialog" aria-labelledby="storeSelectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="storeSelectionModalLabel">Select a Store</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <select id="modalStoreSelect" class="form-control">
+            <option value="">Choose a store...</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="createChatWithStore" class="btn btn-primary">Create Chat</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 </body>
 </html>
