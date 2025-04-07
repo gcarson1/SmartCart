@@ -16,13 +16,13 @@
     {% if message %}
       <div class="alert alert-info">{{ message }}</div>
     {% endif %}
-    <form method="POST" action="/update_inventory" enctype="multipart/form-data">
+    <form method="POST" action="/admin/update_inventory" enctype="multipart/form-data">
       <div class="form-group">
         <label for="txtFile">Select New Inventory File (TXT):</label>
         <input type="file" id="txtFile" name="txtFile" accept=".txt" class="form-control" required>
       </div>
       <button type="submit" class="btn btn-primary">Update Inventory</button>
-      <a href="/admin_panel" class="btn btn-secondary">Back to Dashboard</a>
+      <a href="/admin/admin_panel" class="btn btn-secondary">Back to Dashboard</a>
     </form>
   </div>
 </body>

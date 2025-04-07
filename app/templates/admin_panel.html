@@ -52,7 +52,7 @@
     <div class="title">Smart Cart - Admin Panel</div>
     <div class="user_info">
       <a href="/" class="main-return">
-        <img src="static/main-return.png" alt="Return to main page" />
+        <img src="{{ url_for('static', filename='main-return.png') }}" alt="Return to main page" />
       </a>
     </div>
   </div>
@@ -92,7 +92,7 @@
       {% if message %}
         <div class="message">{{ message }}</div>
       {% endif %}
-      <form method="POST" action="/admin_panel">
+      <form method="POST" action="/admin/admin_panel">
         <div class="form-group">
           <label for="name">Store Name:</label>
           <input type="text" id="name" name="name" class="form-control" required>
@@ -121,7 +121,7 @@
       {% if message %}
         <div class="message">{{ message }}</div>
       {% endif %}
-      <form method="POST" action="/admin_panel" enctype="multipart/form-data">
+      <form method="POST" action="/admin/admin_panel" enctype="multipart/form-data">
         <div class="form-group">
           <label for="txtFile">Select Inventory File (TXT):</label>
           <input type="file" id="txtFile" name="txtFile" accept=".txt" class="form-control" required>
@@ -145,7 +145,7 @@
         <p><strong>Assistant Status:</strong> Active</p>
       </div>
       <div class="dashboard-actions">
-        <a href="/update_inventory" class="btn btn-secondary">Update Inventory</a>
+        <a href="/admin/update_inventory" class="btn btn-secondary">Update Inventory</a>
         <button type="button" class="btn btn-danger" onclick="deleteFile()">Delete Inventory File</button>
       </div>
       {% endif %}
@@ -157,7 +157,6 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script>
     function deleteFile() {
-      // Use the current store's inventory file ID
       const fileId = "{{ store.inventory_file_id }}";
       if (!fileId) {
         alert("No file ID available.");
@@ -171,8 +170,7 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          // On success, redirect back to the admin panel dashboard
-          window.location.href = '/admin_panel';
+          window.location.href = '/admin/admin_panel';
         } else {
           document.querySelector(".message").innerHTML = '<span class="error">' + data.error + '</span>';
         }

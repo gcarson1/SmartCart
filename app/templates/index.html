@@ -17,7 +17,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     body {
       background-color: #f9fdff;
@@ -338,22 +338,20 @@
     </div>
     
     <div class="user_info">
-      <!-- Standalone settings button using a gear icon, styled to be larger and white -->
       <button id="settings-btn" style="background: none; border: none; cursor: pointer; font-size: 30px; color: #fff;">
         <i class="fas fa-user"></i>
       </button>
-      <!-- Dropdown panel for sign in/sign out/admin options -->
       <div id="settings-dropdown" class="avatar-dropdown flex-column">
         {% if not current_user.is_authenticated %}
-          <button onclick="window.location.href='/user_login'" class="dropdown-btn">User Sign In</button>
+          <button onclick="window.location.href='/auth/user_login'" class="dropdown-btn">User Sign In</button>
           <hr>
-          <button onclick="window.location.href='/admin_login'" class="dropdown-btn">Admin Sign In</button>
+          <button onclick="window.location.href='/auth/admin_login'" class="dropdown-btn">Admin Sign In</button>
         {% elif current_user.is_authenticated and not current_user.is_admin %}
-          <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
+          <button onclick="window.location.href='/auth/logout'" class="dropdown-btn">Sign Out</button>
         {% elif current_user.is_authenticated and current_user.is_admin %}
-          <button onclick="window.location.href='/admin_panel'" class="dropdown-btn">Admin Dashboard</button>
+          <button onclick="window.location.href='/admin/admin_panel'" class="dropdown-btn">Admin Dashboard</button>
           <hr>
-          <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
+          <button onclick="window.location.href='/auth/logout'" class="dropdown-btn">Sign Out</button>
         {% endif %}
       </div>
     </div>
@@ -375,7 +373,6 @@
     <div class="middle-column">
       <div class="chat_window_header">
         Chat Window
-        <!-- Trashcan icon button -->
         <button id="delete_chat_btn" title="Delete Conversation">
           <i class="fas fa-trash"></i>
         </button>
@@ -406,11 +403,9 @@
 
   <!-- Chat, Session, and Dropdown Logic -->
   <script>
-    // Global variable for the current session id
     var currentSessionId = null;
     var selectedStoreID = null;
 
-    // Message constructor for chat messages
     var Message = function(arg) {
       this.text = arg.text;
       this.message_side = arg.message_side;
@@ -424,9 +419,8 @@
       };
     };
 
-    // Load chat sessions for the user
     function loadChatSessions() {
-      $.getJSON("/chat_sessions", function(data) {
+      $.getJSON("/chat/chat_sessions", function(data) {
         var $chatList = $('.chat-list');
         $chatList.empty();
         if (data.length === 0) {
@@ -436,7 +430,6 @@
             var $sessionItem = $('<div class="chat-list-item" data-session-id="' + session.session_id + '" data-store-id="' + session.store_id + '"><div class="avatar"></div><div class="chat-info"><div class="chat-name">' + session.title + '</div><div class="chat-snippet">' + session.snippet + '</div></div></div>');
             $chatList.append($sessionItem);
           });
-
           if (!currentSessionId) {
             currentSessionId = data[0].session_id;
             loadChatHistory(currentSessionId);
@@ -445,10 +438,9 @@
       });
     }
     
-    // Create a new chat session
     function createNewChat() {
       $.ajax({
-        url: "/new_chat",
+        url: "/chat/new_chat",
         method: "POST",
         contentType: "application/json",
         data: JSON.stringify({ title: "New Chat", store_id: selectedStoreID }),
@@ -468,7 +460,7 @@
         console.error("Invalid session id:", sessionId);
         return;
       }
-      $.getJSON("/chat_history", { session_id: sessionId }, function(data) {
+      $.getJSON("/chat/chat_history", { session_id: sessionId }, function(data) {
         var $messages = $('.messages');
         $messages.empty();
         if (data.length === 0) {
@@ -486,8 +478,8 @@
     }
 
     function loadStores() {
-      $.getJSON("/stores", function(data) {
-        window.globalStores = data; // store globally for lookup
+      $.getJSON("/store/list", function(data) {
+        window.globalStores = data;
         var $modalSelect = $("#modalStoreSelect");
         $modalSelect.empty();
         $modalSelect.append($("<option>", { value: "", text: "Choose a store..." }));
@@ -500,7 +492,6 @@
       });
     }
 
-    // Send a message in the current session
     function sendMessage(text) {
       if (text.trim() === "") return;
       $(".message_input").val("");
@@ -510,7 +501,7 @@
       $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
 
       $.ajax({
-        url: "/get",
+        url: "/chat/get",
         method: "POST",
         contentType: "application/json",
         data: JSON.stringify({
@@ -529,7 +520,6 @@
       });
     }
 
-    // Dropdown logic for settings and avatar   
     $(function() {
       $('#settings-btn').click(function(event) {
         $('#settings-dropdown').toggleClass('show');
@@ -577,7 +567,6 @@
       });
       
       $('#new_chat_btn').click(function() {
-        // Open the modal for store selection
         $('#storeSelectionModal').modal('show');
       });
 
@@ -587,7 +576,6 @@
         currentSessionId = $(this).data('session-id');
         var storeId = $(this).data('store-id');
         if (storeId) {
-          // Lookup the store name from the global stores array
           var store = window.globalStores.find(function(s) {
             return s.store_id == storeId;
           });
@@ -616,7 +604,7 @@
         }
         if (confirm("Are you sure you want to delete this conversation? This action cannot be undone.")) {
           $.ajax({
-            url: "/delete_chat_history",
+            url: "/chat/delete_chat_history",
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({ session_id: currentSessionId }),
@@ -657,12 +645,8 @@
           alert("Please select a store.");
           return;
         }
-        // Get the store name from the selected option.
         var storeName = $("#modalStoreSelect option:selected").text();
-        // Update the header with the selected store's name.
         $(".top_menu .title").text("Smart Cart - " + storeName);
-        
-        // Set the global variable for the new chat creation.
         selectedStoreID = storeId;
         createNewChat();
         $('#storeSelectionModal').modal('hide');
