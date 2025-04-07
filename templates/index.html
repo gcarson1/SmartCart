@@ -516,7 +516,7 @@
         data: JSON.stringify({
           msg: text,
           session_id: currentSessionId,
-          store_id: selectedStoreID
+          store_id: selectedStoreID,
         }),
         success: function(data) {
           var botMsg = new Message({ text: data.response, message_side: "left" });
