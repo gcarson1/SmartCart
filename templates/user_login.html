@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Cart - Admin Sign Up</title>
+  <title>Smart Cart - User Login</title>
   
   <!-- Bootstrap (Optional) -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -46,6 +46,13 @@
       object-fit: cover;
       margin-right: 25px;
     }
+    /* Avatar styling */
+    .top_menu .avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #fff; /* White placeholder */
+    }
     /* Main container */
     .main-container {
       display: flex;
@@ -55,7 +62,7 @@
       height: calc(100vh - 60px);
       padding: 20px;
     }
-    /* Centered form wrapper */
+    /* Centered login form */
     .login-wrapper {
       background-color: #fff;
       width: 350px;
@@ -81,44 +88,54 @@
       text-align: center;
       margin-bottom: 10px;
     }
+    /* Sign Up button spacing */
+    .signup-btn {
+      margin-top: 15px;
+    }
+    /* Google sign-in styling */
+    .google-signin {
+      margin-top: 15px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
+  <!-- Top Bar -->
   <div class="top_menu">
-    <div class="title">Smart Cart - Admin Sign Up</div>
+    <div class="title">Smart Cart - User Login</div>
     <div class="user_info">
+      <!-- Return to main page button -->
       <a href="/" class="main-return">
-        <img src="{{ url_for('static', filename='main-return.png') }}" alt="Return to main page" />
+        <img src="static/main-return.png" alt="Return to main page" />
       </a>
+      <!-- User Avatar -->
     </div>
   </div>
+
+  <!-- Main Container -->
   <div class="main-container">
     <div class="login-wrapper">
-      <h2>Create Admin Account</h2>
+      <h2>User Login</h2>
       {% if error %}
         <div class="error-message">{{ error }}</div>
       {% endif %}
-      <form method="POST" action="/auth/admin_signup">
+      <!-- POST form to /user_login -->
+      <form method="POST" action="/user_login">
         <div class="form-group">
           <label for="username">Username:</label>
-          <input type="text" id="username" name="username" class="form-control" placeholder="Enter a username" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required />
+          <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" />
         </div>
         <div class="form-group">
           <label for="password">Password:</label>
-          <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required />
+          <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" />
         </div>
-        <div class="form-group">
-          <label for="confirm_password">Confirm Password:</label>
-          <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm your password" required />
-        </div>
-        <button type="submit" class="btn btn-primary">Create Admin Account</button>
+        <button type="submit" class="btn btn-primary">Login</button>
       </form>
-      <div class="text-center" style="margin-top: 15px;">
-        <a href="/auth/admin_login" class="btn btn-secondary">Back to Admin Login</a>
+
+      
+      <!-- Sign Up Button -->
+      <div class="text-center signup-btn">
+        <a href="/signup" class="btn btn-secondary">Sign Up</a>
       </div>
     </div>
   </div>

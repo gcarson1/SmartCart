@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Cart - User Login</title>
+  <title>Smart Cart - Sign Up</title>
   
   <!-- Bootstrap (Optional) -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -17,7 +17,7 @@
       font-family: "Roboto", sans-serif;
     }
     body {
-      background-color: #cecece;
+      background-color: #cecece; /* Light gray background */
     }
     /* Top Bar (blue) */
     .top_menu {
@@ -38,6 +38,7 @@
       display: flex;
       align-items: center;
     }
+    /* Main-return button styling */
     .main-return img {
       width: 35px;
       height: 35px;
@@ -45,11 +46,12 @@
       object-fit: cover;
       margin-right: 25px;
     }
+    /* Avatar styling */
     .top_menu .avatar {
       width: 35px;
       height: 35px;
       border-radius: 50%;
-      background: #fff;
+      background: #fff; /* White placeholder */
     }
     /* Main container */
     .main-container {
@@ -60,25 +62,25 @@
       height: calc(100vh - 60px);
       padding: 20px;
     }
-    /* Centered login form */
-    .login-wrapper {
+    /* Centered sign up form */
+    .signup-wrapper {
       background-color: #fff;
       width: 350px;
       padding: 20px;
       border-radius: 4px;
       box-shadow: none;
     }
-    .login-wrapper h2 {
+    .signup-wrapper h2 {
       margin-bottom: 20px;
       text-align: center;
     }
-    .login-wrapper .form-group {
+    .signup-wrapper .form-group {
       margin-bottom: 15px;
     }
-    .login-wrapper label {
+    .signup-wrapper label {
       font-weight: 500;
     }
-    .login-wrapper .btn {
+    .signup-wrapper .btn {
       width: 100%;
     }
     .error-message {
@@ -86,45 +88,48 @@
       text-align: center;
       margin-bottom: 10px;
     }
-    .signup-btn {
-      margin-top: 15px;
-    }
-    .google-signin {
-      margin-top: 15px;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
+  <!-- Top Bar -->
   <div class="top_menu">
-    <div class="title">Smart Cart - User Login</div>
+    <div class="title">Smart Cart - Sign Up</div>
     <div class="user_info">
-      <a href="/" class="main-return">
-        <img src="{{ url_for('static', filename='main-return.png') }}" alt="Return to main page" />
+      <!-- Return to main page button -->
+      <a href="/user_login" class="main-return">
+        <img src="static/main-return.png" alt="Return to previous page" />
       </a>
+      <!-- User Avatar (placeholder) -->
     </div>
   </div>
 
+  <!-- Main Container -->
   <div class="main-container">
-    <div class="login-wrapper">
-      <h2>User Login</h2>
+    <div class="signup-wrapper">
+      <h2>Sign Up</h2>
       {% if error %}
         <div class="error-message">{{ error }}</div>
       {% endif %}
-      <form method="POST" action="/auth/user_login">
+      <!-- POST form to /signup -->
+      <form method="POST" action="/signup">
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="Enter email (optional)" />
+        </div>
         <div class="form-group">
           <label for="username">Username:</label>
-          <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" />
+          <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required />
         </div>
         <div class="form-group">
           <label for="password">Password:</label>
-          <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" />
+          <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required />
         </div>
-        <button type="submit" class="btn btn-primary">Login</button>
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password:</label>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm password" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
       </form>
-      <div class="text-center signup-btn">
-        <a href="/auth/signup" class="btn btn-secondary">Sign Up</a>
-      </div>
     </div>
   </div>
 </body>
