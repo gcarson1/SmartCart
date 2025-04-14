@@ -9,14 +9,18 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-
 </head>
 <body>
   <!-- Top Bar -->
   <div class="top_menu">
+    <button class="menu-toggle" id="sidebarToggle">
+      <i class="fas fa-bars"></i>
+    </button>
     <div class="title">
       {% if current_user.is_authenticated %}
         Smart Cart - {{ currStoreName }}
@@ -24,13 +28,11 @@
         Welcome to Smart Cart
       {% endif %}
     </div>
-    
+
     <div class="user_info">
-      <!-- Standalone settings button using a gear icon, styled to be larger and white -->
       <button id="settings-btn" style="background: none; border: none; cursor: pointer; font-size: 30px; color: #fff;">
         <i class="fas fa-user"></i>
       </button>
-      <!-- Dropdown panel for sign in/sign out/admin options -->
       <div id="settings-dropdown" class="avatar-dropdown flex-column">
         {% if not current_user.is_authenticated %}
           <button onclick="window.location.href='/user_login'" class="dropdown-btn">User Sign In</button>
@@ -46,11 +48,11 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Main 3-column container -->
   <div class="main-container">
     <!-- LEFT COLUMN: Chat Sessions -->
-    <div class="left-column">
+    <div class="left-column sidebar">
       <div class="header">
         Previous Chats
         <button id="new_chat_btn" class="new-chat-btn"><i class="fas fa-plus"></i></button>
@@ -59,16 +61,24 @@
         <!-- Chat sessions loaded dynamically -->
       </div>
     </div>
+
     <!-- MIDDLE COLUMN: Chat Window -->
     <div class="middle-column">
       <div class="chat_window_header">
         Chat Window
-        <!-- Trashcan icon button -->
         <button id="delete_chat_btn" title="Delete Conversation">
           <i class="fas fa-trash"></i>
         </button>
       </div>
+
+      <!-- Placeholder for empty chat -->
+      <div class="empty-chat-placeholder" style="display: none; text-align: center; padding: 60px 20px; color: #999; font-size: 15px;">
+        <img src="/static/bot.png" style="max-width: 180px; margin-bottom: 20px;"/>
+        <p>Start chatting to get smart shopping assistance!</p>
+      </div>
+
       <ul class="messages"></ul>
+
       <div class="bottom_wrapper clearfix">
         <div class="message_input_wrapper">
           <input class="message_input" placeholder="Type your message here..."/>
@@ -77,22 +87,23 @@
           <i class="fas fa-paper-plane"></i>
         </div>
       </div>
+
+      <!-- Hidden message template -->
       <div class="message_template">
         <li class="message">
-          <div class="avatar"></div>
           <div class="text_wrapper">
             <div class="text"></div>
           </div>
+          <div class="timestamp">12:00</div>
         </li>
       </div>
     </div>
   </div>
-  
-  <!-- jQuery -->
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-  <!-- Chat, Session, and Dropdown Logic -->
+  <!-- Include chat and dropdown logic here -->
+  <!-- Include chat and dropdown logic here -->
   <script>
     // Global variable for the current session id
     var currentSessionId = null;
@@ -133,6 +144,22 @@
       });
     }
     
+    $(function() {
+  $('#sidebarToggle').click(function () {
+    $('.left-column').toggleClass('open');
+  });
+
+  $(document).click(function (e) {
+    if (
+      !$(e.target).closest('.left-column').length &&
+      !$(e.target).closest('#sidebarToggle').length
+    ) {
+      $('.left-column').removeClass('open');
+    }
+  });
+});
+
+
     // Create a new chat session
     function createNewChat() {
       $.ajax({
