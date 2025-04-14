@@ -2,3 +2,4 @@ venv/
 .env
 chat_history.txt
 postgres.sql
+Procfile
