@@ -11,40 +11,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
   <!-- Google Fonts for Roboto -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
-  
-  <style>
-    /* Basic Reset & Box Sizing */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background-color: #f4f6f9; font-family: "Roboto", sans-serif; }
-    /* Top Bar */
-    .top_menu { position: fixed; top: 0; left: 0; right: 0; height: 60px; background-color: #2d5996; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; }
-    .top_menu .title { font-size: 20px; font-weight: 500; }
-    .top_menu .user_info { display: flex; align-items: center; }
-    .top_menu .user_info .main-return img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 25px; transition: transform 0.3s ease; }
-    .top_menu .user_info .main-return img:hover { transform: scale(1.1); }
-    /* Sidebar */
-    .sidebar { position: fixed; top: 60px; left: 0; bottom: 0; width: 220px; background-color: #2d5996; padding-top: 20px; z-index: 999; overflow-y: auto; }
-    .sidebar .nav-link { color: #fff; padding: 10px 20px; font-size: 15px; }
-    .sidebar .nav-link:hover { background-color: #22477a; text-decoration: none; }
-    .sidebar .nav-link i { margin-right: 8px; }
-    /* Main Container */
-    .main-container { margin-top: 60px; margin-left: 220px; padding: 20px; min-height: calc(100vh - 60px); }
-    /* Content Wrapper */
-    .content-wrapper { background-color: #fff; width: 100%; max-width: 800px; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .content-wrapper h2 { margin-bottom: 25px; text-align: center; font-size: 22px; color: #333; }
-    .content-wrapper .form-group { margin-bottom: 20px; }
-    .content-wrapper label { font-weight: 500; margin-bottom: 5px; display: block; color: #555; }
-    .content-wrapper .btn { padding: 10px 20px; font-size: 16px; }
-    /* Dashboard Sections */
-    .dashboard-section { margin-bottom: 30px; }
-    .dashboard-section h3 { margin-bottom: 15px; }
-    .dashboard-section p { margin-bottom: 10px; }
-    .dashboard-actions { text-align: center; }
-    .dashboard-actions a, .dashboard-actions button { margin: 0 10px; }
-    .message { text-align: center; margin-bottom: 15px; }
-    .success { color: green; }
-    .error { color: red; }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_panel.css') }}">
+
 </head>
 <body>
   <!-- Top Bar -->

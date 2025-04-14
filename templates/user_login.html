@@ -4,100 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Smart Cart - User Login</title>
-  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+
   <!-- Bootstrap (Optional) -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  
-  <style>
-    /* Basic Reset & Box Sizing */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Roboto", sans-serif;
-    }
-    body {
-      background-color: #cecece; /* Light gray background */
-    }
-    /* Top Bar (blue) */
-    .top_menu {
-      width: 100%;
-      height: 60px;
-      background-color: #2d5996;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-    }
-    .top_menu .title {
-      font-size: 18px;
-      font-weight: 600;
-    }
-    .top_menu .user_info {
-      display: flex;
-      align-items: center;
-    }
-    /* Main-return button styling */
-    .main-return img {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 25px;
-    }
-    /* Avatar styling */
-    .top_menu .avatar {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      background: #fff; /* White placeholder */
-    }
-    /* Main container */
-    .main-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: calc(100vh - 60px);
-      padding: 20px;
-    }
-    /* Centered login form */
-    .login-wrapper {
-      background-color: #fff;
-      width: 350px;
-      padding: 20px;
-      border-radius: 4px;
-      box-shadow: none;
-    }
-    .login-wrapper h2 {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .login-wrapper .form-group {
-      margin-bottom: 15px;
-    }
-    .login-wrapper label {
-      font-weight: 500;
-    }
-    .login-wrapper .btn {
-      width: 100%;
-    }
-    .error-message {
-      color: red;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    /* Sign Up button spacing */
-    .signup-btn {
-      margin-top: 15px;
-    }
-    /* Google sign-in styling */
-    .google-signin {
-      margin-top: 15px;
-      text-align: center;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user_login.css') }}">
+
 </head>
 <body>
   <!-- Top Bar -->

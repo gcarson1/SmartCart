@@ -1,0 +1,19 @@
+/* Basic Reset & Box Sizing */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Roboto", sans-serif;
+    }
+    body {
+      background-color: #cecece; /* Light gray background */
+    }
+    /* Sign Up button spacing */
+    .signup-btn {
+      margin-top: 15px;
+    }
+    /* Google sign-in styling */
+    .google-signin {
+      margin-top: 15px;
+      text-align: center;
+    }
