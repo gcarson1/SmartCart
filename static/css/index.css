@@ -82,10 +82,14 @@ body {
     display: block;
   }
 
+  body{
+    height: calc(100vh - 80px);
+    overflow: hidden;
+  }
 
   .main-container {
     display: block;
-    height: 100vh;
+    height: calc(100vh - 800px);
     padding: 0;
   }
 
@@ -341,8 +345,6 @@ body {
     display: block;
     position: relative;
   }
-
-
 
   .left-column.sidebar {
     position: fixed;
