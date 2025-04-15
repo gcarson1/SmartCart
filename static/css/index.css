@@ -350,13 +350,15 @@ body {
     position: fixed;
     top: 50px;
     left: -260px;
-    height: 90%;
+    height: calc(100vh - 190px);
     width: 250px;
     background: #f9fdff;
     transition: left 0.3s ease-in-out;
     z-index: 1000;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     margin-left: 0px;
+    overflow-y: auto;
+
   }
 
   .left-column.sidebar.open {
