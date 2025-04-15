@@ -108,7 +108,7 @@ body {
   }
 
   body{
-    height: calc(100vh - 90px);
+    height: calc(100vh - 80px);
     overflow: hidden;
   }
 
@@ -221,6 +221,7 @@ body {
   overflow: hidden;
   height: calc(100vh - 80px); /* 60px = height of .top_menu */
   border-radius: 15px;
+  box-shadow: 0px 2px 10px #0000005a;
 
 } 
 
@@ -319,6 +320,7 @@ body {
   max-width: 70%;
   font-size: 14px;
   position: relative;
+
 }
 
 .bottom_wrapper {
@@ -337,8 +339,8 @@ body {
 
 .message_input_wrapper {
   flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1.5px solid #ccc;
+  border-radius: 7px;
   margin-right: 10px;
 }
 
@@ -346,6 +348,7 @@ body {
   width: 100%;
   padding: 8px 12px;
   font-size: 14px;
+  border-radius: 7px;
   border: none;
   outline: none;
   color: #333;
