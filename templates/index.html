@@ -22,11 +22,14 @@
     <button class="menu-toggle" id="sidebarToggle">
       <i class="fas fa-bars"></i>
     </button>
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='default-monochrome-white.svg') }}" alt="SmartCart Logo" class="top-logo" />
+    </div>
     <div class="title">
       {% if current_user.is_authenticated %}
         {{ currStoreName }}
       {% else %}
-        Welcome to Smart Cart
+
       {% endif %}
     </div>
 
