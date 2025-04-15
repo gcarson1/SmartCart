@@ -59,7 +59,7 @@ def admin_login():
 @auth_bp.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('general.index'))
+    return redirect(url_for('general.landing'))
 
 @auth_bp.route('/google_login')
 def google_login():

@@ -18,7 +18,9 @@ def create_app():
     load_dotenv()
 
     app = Flask(__name__)
+
     app.config.from_object("config.Config")
+
 
     db.init_app(app)
     login_manager.init_app(app)

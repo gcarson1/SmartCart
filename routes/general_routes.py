@@ -3,6 +3,10 @@ from flask import Blueprint, render_template, redirect
 general_bp = Blueprint('general', __name__)
 
 @general_bp.route('/')
+def landing():
+    return render_template('landing.html')
+
+@general_bp.route('/index')
 def index():
     return render_template("index.html")
 

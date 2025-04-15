@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartCart - Your Shopping Assistant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <style>
+    body {
+      background: linear-gradient(180deg, #366CD9 10%, #547fd5 100%);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .landing-hero {
+      text-align: center;
+      padding: 100px 20px 60px;
+    }
+
+    .landing-hero h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .landing-hero p {
+      font-size: 1.25rem;
+      color: #e0e0e0;
+      max-width: 700px;
+      margin: 0 auto 30px;
+    }
+
+    .landing-hero .cta a {
+      background-color: #fff;
+      color: #2d5996;
+      text-decoration: none;
+      padding: 14px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .landing-hero .cta a:hover {
+      background-color: #f0f0f0;
+    }
+
+    .features {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 40px 20px;
+      gap: 40px;
+    }
+
+    .feature {
+      background-color: #fff;
+      color: #2c3e50;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 300px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .feature h3 {
+      margin-bottom: 12px;
+      color: #366CD9;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #dcdcdc;
+    }
+
+    .top_menu .user_info a {
+      margin-left: 10px;
+    }
+    .top_menu .user_info .dropdown-btn {
+  background-color: #fff;
+  color: #2d5996;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 14px;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.top_menu .user_info .dropdown-btn:hover {
+  background-color: #f0f0f0;
+}
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top_menu">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='default-monochrome-white.svg') }}" alt="SmartCart Logo" class="top-logo" />
+    </div>
+    <div class="user_info">
+      <a href="{{ url_for('auth.signup') }}" class="dropdown-btn">Sign Up</a>
+      <a href="{{ url_for('auth.user_login') }}" class="dropdown-btn">Login</a>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="landing-hero">
+    <h1>Welcome to SmartCart</h1>
+    <p>Your intelligent shopping assistant. Navigate stores, plan meals, and get real-time ingredient suggestions — all powered by AI.</p>
+    <div class="cta">
+      <a href="{{ url_for('auth.signup') }}">Create an Account</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="feature">
+      <h3>AI Chatbot Assistant</h3>
+      <p>Get instant help navigating products and finding ingredients tailored to your needs.</p>
+    </div>
+    <div class="feature">
+      <h3>Smart Inventory</h3>
+      <p>Track what's available in-store and never forget an item again.</p>
+    </div>
+    <div class="feature">
+      <h3>Seamless Planning</h3>
+      <p>Receive recipe suggestions and build your grocery list in real time.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div class="footer">
+    &copy; 2025 SmartCart. All rights reserved.
+  </div>
+
+</body>
+</html>
