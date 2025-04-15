@@ -93,6 +93,10 @@ body {
     display: none;
   }
 
+  .top_menu .user_info {
+    margin-top: 0;
+  }
+
   .left-column.sidebar {
     display: block;
   }
@@ -121,9 +125,9 @@ body {
   }
   
   .middle-column {
-    margin-left: 0 !important;
-    width: 100% !important;
-    border-radius: 0px !important;
+    margin-left: 0.75% !important;
+    width: 98.5% !important;
+    border-radius: 7px !important;
     height: calc(100vh - 120px) !important;
   }
 }
