@@ -4,22 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Smart Cart - Sign Up</title>
-  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+
   <!-- Bootstrap (Optional) -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user_login.css') }}">
 
 </head>
 <body>
-  <!-- Top Bar -->
   <div class="top_menu">
+    <div style="flex: 1;"></div> <!-- Empty spacer to push to right -->
     <div class="user_info">
-      <!-- Return to main page button -->
-      <a href="/user_login" class="main-return">
-        <img src="static/main-return.png" alt="Return to previous page" />
+      <a href="/" class="main-return">
+        <img src="static/main-return.png" alt="Return to main page" />
       </a>
-      <!-- User Avatar (placeholder) -->
     </div>
   </div>
 

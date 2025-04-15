@@ -46,6 +46,7 @@
   .main-return img {
     width: 35px;
     height: 35px;
+    right: 5px;
     border-radius: 50%;
     object-fit: cover;
     margin-right: 25px;
