@@ -113,6 +113,7 @@ body {
   width: 25%;
   background-color: #f9fdff;
   border-right: 1px solid #e0e0e0;
+  height: calc(100vh - 80px); /* 60px = height of .top_menu */
   display: flex;
   flex-direction: column;
   border-radius: 15px;
