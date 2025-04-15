@@ -6,7 +6,7 @@
       font-family: "Roboto", sans-serif;
     }
     body {
-      background-color: #cecece; /* Light gray background */
+      background-color: #366CD9; /* Light gray background */
     }
     /* Sign Up button spacing */
     .signup-btn {
@@ -14,6 +14,7 @@
     }
     /* Google sign-in styling */
     .google-signin {
+      background-color: #366CD9;
       margin-top: 15px;
       text-align: center;
     }

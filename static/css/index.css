@@ -33,6 +33,8 @@ body {
   position: absolute;
   right: 8px;
   top: 50%;
+  margin-top: 5px;
+  margin-right: 5px;
   transform: translateY(-50%);
 }
 
@@ -48,6 +50,7 @@ body {
   width: 140px;
   display: none;
   z-index: 1000;
+  border: 1px solid #bdbcbc;
 }
 
 .avatar-dropdown.show {
@@ -128,12 +131,12 @@ body {
 .left-column {
   width: 25%;
   background-color: #f9fdff;
-  border-right: 1px solid #e0e0e0;
   height: calc(100vh - 80px); /* 60px = height of .top_menu */
   display: flex;
   flex-direction: column;
   border-radius: 15px;
   margin-right: 10px;
+  border-radius: 15px;
 }
 
 .left-column .header {
@@ -146,7 +149,8 @@ body {
   align-items: center;
   justify-content: space-between;
   color: #7a7a7a;
-  border-radius: 15px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
 }
 
 .new-chat-btn {
@@ -207,6 +211,7 @@ body {
   overflow: hidden;
   height: calc(100vh - 80px); /* 60px = height of .top_menu */
   border-radius: 15px;
+
 } 
 
 
