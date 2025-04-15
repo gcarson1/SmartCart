@@ -1,7 +1,9 @@
 /* Basic Reset & Box Sizing */
 
+
 body {
   background: linear-gradient(180deg, #366CD9 10%, #547fd5 100%);
+  background-repeat: no-repeat;
 }
 
 /* Top Bar */
@@ -106,13 +108,13 @@ body {
   }
 
   body{
-    height: calc(100vh - 80px);
+    height: calc(100vh - 90px);
     overflow: hidden;
   }
 
   .main-container {
     display: block;
-    height: calc(100vh - 800px);
+    height: calc(100vh - 70px);
     padding: 0;
   }
 
@@ -128,7 +130,11 @@ body {
     margin-left: 0.75% !important;
     width: 98.5% !important;
     border-radius: 7px !important;
-    height: calc(100vh - 120px) !important;
+    height: calc(100vh - 140px) !important;
+  }
+  body {
+    background: linear-gradient(180deg, #366CD9 80%, #ffffff 100%);
+    background-repeat: no-repeat;
   }
 }
 
