@@ -23,6 +23,36 @@
       margin-bottom: 20px;
     }
 
+/* Fix mobile scroll override from index.css */
+body.landing-page {
+  height: auto !important;
+  overflow: auto !important;
+}
+
+/* Hero Text Behavior */
+.desktop-only {
+  display: block;
+}
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 911px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: block !important;
+  }
+  .mobile-hero h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0;
+  }
+  .mobile-hero img {
+    height: 48px;
+  }
+}
+
     .landing-hero p {
       font-size: 1.25rem;
       color: #e0e0e0;
@@ -95,7 +125,7 @@
 }
   </style>
 </head>
-<body>
+<body class="landing-page">
 
   <!-- Top Bar -->
   <div class="top_menu">
@@ -110,12 +140,19 @@
 
   <!-- Hero Section -->
   <section class="landing-hero">
-    <h1>Welcome to SmartCart</h1>
+    <h1 class="hero-heading desktop-only">Welcome to SmartCart</h1>
+    <div class="mobile-hero mobile-only">
+      <h1>Welcome to</h1>
+      <img src="{{ url_for('static', filename='default-monochrome-white.svg') }}" alt="SmartCart Logo" class="top-logo" style="margin-top: 10px;" />
+    </div>
+    <br>
+    <br>
     <p>Your intelligent shopping assistant. Navigate stores, plan meals, and get real-time ingredient suggestions — all powered by AI.</p>
     <div class="cta">
       <a href="{{ url_for('auth.signup') }}">Create an Account</a>
     </div>
   </section>
+  
 
   <!-- Features Section -->
   <section class="features">
