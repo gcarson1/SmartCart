@@ -81,8 +81,27 @@ body {
   .left-column.sidebar {
     display: block;
   }
+
+
+  .main-container {
+    display: block;
+    height: 100vh;
+    padding: 0;
+  }
+
+  .chat_window_header{
+    border-radius: 0;
+  }
+
+  html, body {
+    overflow-x: hidden;
+  }
+  
   .middle-column {
-    margin-left: 0;
+    margin-left: 0 !important;
+    width: 100% !important;
+    border-radius: 0px !important;
+    height: calc(100vh - 120px) !important;
   }
 }
 
@@ -165,7 +184,7 @@ body {
   width: 100%;
   position: relative;
   overflow: hidden;
-  height: calc(100vh - 65px); /* 60px = height of .top_menu */
+  height: calc(100vh - 80px); /* 60px = height of .top_menu */
   border-radius: 15px;
 } 
 
@@ -199,6 +218,8 @@ body {
   overflow-y: auto;
   background-color: #e9eef363;
   padding: 20px 10px 80px 10px; /* <- leave space for input */
+  max-height: calc(100vh - 120px); /* Adjust based on top + input bar height */
+
 }
 
 
@@ -268,6 +289,8 @@ body {
   position: absolute;
   bottom: 0;
   width: 100%;
+  left: 0;
+  right: 0;
   border-top: 1px solid #e0e0e0;
   padding: 10px 20px;
   display: flex;
