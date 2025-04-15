@@ -24,7 +24,7 @@
     </button>
     <div class="title">
       {% if current_user.is_authenticated %}
-        Smart Cart - {{ currStoreName }}
+        {{ currStoreName }}
       {% else %}
         Welcome to Smart Cart
       {% endif %}
@@ -308,7 +308,7 @@
             return s.store_id == storeId;
           });
           var storeName = store ? store.name : "Undefined";
-          $(".top_menu .title").text("Smart Cart - " + storeName);
+          $(".top_menu .title").text(storeName); // Updated to remove "Smart Cart - "
         } else {
           $(".top_menu .title").text("Smart Cart");
         }
@@ -376,7 +376,7 @@
         // Get the store name from the selected option.
         var storeName = $("#modalStoreSelect option:selected").text();
         // Update the header with the selected store's name.
-        $(".top_menu .title").text("Smart Cart - " + storeName);
+        $(".top_menu .title").text(storeName);
         
         // Set the global variable for the new chat creation.
         selectedStoreID = storeId;
