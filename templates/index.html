@@ -207,7 +207,19 @@ function loadChatHistory(sessionId) {
       new Message({ text: 'How can I help you today?', message_side: 'left' }).draw();
     } else {
       data.forEach(msg => {
-        new Message({ text: msg.message, message_side: msg.sender === 'user' ? 'right' : 'left' }).draw();
+        let ts;
+        if (msg.timestamp) {
+          const date = new Date(msg.timestamp);
+          ts = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } else {
+          ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        new Message({
+          text: msg.message,
+          message_side: msg.sender === 'user' ? 'right' : 'left',
+          timestamp: ts
+        }).draw();
       });
     }
     $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);

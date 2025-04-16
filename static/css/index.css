@@ -213,12 +213,14 @@ body {
   padding: 15px;
   background-color: #e9eef3;
   border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0px 2px 10px #00000027;
   font-weight: 500;
   height: 61px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #7a7a7a;
+  color: #a5a3a3;
+  text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.707);
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }

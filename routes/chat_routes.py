@@ -67,10 +67,20 @@ def chat_sessions():
 def chat_history():
     session_id = request.args.get("session_id")
     if not session_id:
-        return jsonify({"error": "No session id provided."}), 400
-    messages = ChatMessage.query.filter_by(user_id=current_user.user_id, session_id=session_id).order_by(ChatMessage.sent_at).all()
-    history = [{'sender': msg.sender, 'message': msg.message} for msg in messages]
-    return jsonify(history)
+        return jsonify([])
+
+    messages = ChatMessage.query.filter_by(session_id=session_id)\
+        .order_by(ChatMessage.sent_at.asc()).all()
+
+    return jsonify([
+        {
+            "message": m.message,
+            "sender": m.sender,
+            "timestamp": m.sent_at.isoformat() if m.sent_at else None
+        }
+        for m in messages
+    ])
+
 
 @chat_bp.route("/get", methods=["POST"])
 def get_bot_response():
