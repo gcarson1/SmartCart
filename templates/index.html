@@ -13,7 +13,7 @@
   <div class="top_menu">
     <button class="menu-toggle" id="sidebarToggle"><i data-lucide="menu"></i></button>
     <div class="logo-container">
-      <img src="{{ url_for('static', filename='default-monochrome-black.svg') }}" alt="SmartCart Logo" class="top-logo" />
+      <img src="{{ url_for('static', filename='default-monochrome-white.svg') }}" alt="SmartCart Logo" class="top-logo" />
     </div>
     <div class="title">{% if current_user.is_authenticated %}{{ currStoreName }}{% endif %}</div>
     <div class="user_info">

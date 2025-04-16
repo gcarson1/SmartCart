@@ -40,7 +40,7 @@ body {
   right: 10px;
   top: 50%;
   margin-top: 0px;
-  margin-right: 5px;
+  margin-right: 0px;
   transform: translateY(-50%);
 }
 
@@ -126,6 +126,8 @@ body {
 @media (max-width: 911px) {
   .top_menu svg {
     stroke: white !important;
+    margin-bottom: 8px;
+
   }
 
   .top-logo {
@@ -135,7 +137,7 @@ body {
 
 @media (min-width: 911px) {
   .top_menu svg {
-    stroke: black !important;
+    stroke: rgb(255, 255, 255) !important;
   }
 
   .top-logo {
@@ -157,11 +159,10 @@ body {
     display: none;
   }
 
-  .top_menu .user_info {
+  .top_menu ._info {
     position: absolute;
     right: 10px;
     top: 15px;
-    margin-top: 2px;
     margin-right: 5px;
     transform: translateY(-50%);
   }
@@ -463,8 +464,9 @@ body {
     color: #000000;
     font-size: 40px;
     margin-right: 15px;
+    margin-top: 5px;
     z-index: 1100;
-    left: 10px;
+    left: 5px;
     margin-bottom: 10px;
     position: absolute;
   }
