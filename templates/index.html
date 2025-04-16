@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Smart Cart AI</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <link href="{{ url_for('static', filename='favicon.png') }}" rel="icon" type="image/png" />
   <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet" />
 </head>
 <body>
@@ -48,7 +48,7 @@
     <div class="middle-column">
       <div class="chat_window_header">
         Chat Window
-        <button class="icons" id="delete_chat_btn" title="Delete Conversation"><i data-lucide="trash-2"></i></button>
+        <button style="margin-bottom:5px" id="delete_chat_btn" title="Delete Conversation"><i data-lucide="trash-2"></i></button>
       </div>
 
       <div class="empty-chat-placeholder" style="display: none; text-align: center; padding: 60px 20px; color: #999; font-size: 15px;">
