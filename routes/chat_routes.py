@@ -3,6 +3,8 @@ from flask_login import login_required, current_user
 from models.models import db, ChatSession, ChatMessage, Store
 from services.openai_service import run_assistant, run_assistant_for_store
 from services.openai_service import client
+from sqlalchemy import desc
+
 
 chat_bp = Blueprint('chat', __name__)
 
@@ -29,16 +31,35 @@ def new_chat():
     db.session.commit()
     return jsonify({"session_id": new_session.session_id, "title": new_session.title})
 
+from sqlalchemy import desc
+
 @chat_bp.route("/chat_sessions", methods=["GET"])
 @login_required
 def chat_sessions():
-    sessions = ChatSession.query.filter_by(user_id=current_user.user_id).order_by(ChatSession.created_at.desc()).all()
-    session_list = [{
-        "session_id": s.session_id,
-        "title": s.title,
-        "store_id": s.store_id,
-        "created_at": s.created_at.isoformat()
-    } for s in sessions]
+    sessions = ChatSession.query.filter_by(user_id=current_user.user_id)\
+        .order_by(ChatSession.created_at.desc()).all()
+
+    session_list = []
+    for s in sessions:
+        # Fetch most recent chat message for this session
+        last_msg = ChatMessage.query.filter_by(session_id=s.session_id)\
+            .order_by(ChatMessage.sent_at.desc()).first()
+
+        # Use the message text or fallback string
+        snippet = last_msg.message if last_msg else "(No messages yet)"
+
+        # Truncate the snippet to 50 characters
+        if len(snippet) > 35:
+            snippet = snippet[:35] + "..."
+
+        session_list.append({
+            "session_id": s.session_id,
+            "title": s.title,
+            "store_id": s.store_id,
+            "created_at": s.created_at.isoformat(),
+            "snippet": snippet
+        })
+
     return jsonify(session_list)
 
 @chat_bp.route("/chat_history", methods=["GET"])
