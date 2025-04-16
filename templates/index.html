@@ -1,83 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Smart Cart AI</title>
-
-  <!-- Bootstrap (Optional) -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='favicon.png') }}" rel="icon" type="image/png" />
+  <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet" />
 </head>
 <body>
-  <!-- Top Bar -->
   <div class="top_menu">
-    <button class="menu-toggle" id="sidebarToggle">
-      <i class="fas fa-bars"></i>
-    </button>
+    <button class="menu-toggle" id="sidebarToggle"><i data-lucide="menu"></i></button>
     <div class="logo-container">
-      <img src="{{ url_for('static', filename='default-monochrome-white.svg') }}" alt="SmartCart Logo" class="top-logo" />
+      <img src="{{ url_for('static', filename='default-monochrome-black.svg') }}" alt="SmartCart Logo" class="top-logo" />
     </div>
-    <div class="title">
-      {% if current_user.is_authenticated %}
-        {{ currStoreName }}
-      {% else %}
-
-      {% endif %}
-    </div>
-
+    <div class="title">{% if current_user.is_authenticated %}{{ currStoreName }}{% endif %}</div>
     <div class="user_info">
-      <button id="settings-btn" style="background: none; border: none; cursor: pointer; font-size: 30px; color: #fff;">
-        <i class="fas fa-user"></i>
+      <button id="settings-btn" style="background: none; border: none; cursor: pointer; font-size: 45px;">
+        <i data-lucide="user-circle"></i>
       </button>
-      <div id="settings-dropdown" class="avatar-dropdown flex-column">
+      <div class="avatar-dropdown flex-column" id="settings-dropdown">
         {% if not current_user.is_authenticated %}
-          <button onclick="window.location.href='/user_login'" class="dropdown-btn">User Sign In</button>
-          <hr>
-          <button onclick="window.location.href='/admin_login'" class="dropdown-btn">Admin Sign In</button>
+        <button class="dropdown-btn" onclick="window.location.href='/user_login'">User Sign In</button>
+        <hr />
+        <button class="dropdown-btn" onclick="window.location.href='/admin_login'">Admin Sign In</button>
         {% elif current_user.is_authenticated and not current_user.is_admin %}
-          <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
+        <button class="dropdown-btn" onclick="window.location.href='/logout'">Sign Out</button>
         {% elif current_user.is_authenticated and current_user.is_admin %}
-          <button onclick="window.location.href='/admin_panel'" class="dropdown-btn">Admin Dashboard</button>
-          <hr>
-          <button onclick="window.location.href='/logout'" class="dropdown-btn">Sign Out</button>
+        <button class="dropdown-btn" onclick="window.location.href='/admin_panel'">Admin Dashboard</button>
+        <hr />
+        <button class="dropdown-btn" onclick="window.location.href='/logout'">Sign Out</button>
         {% endif %}
       </div>
     </div>
   </div>
 
-  <!-- Main 3-column container -->
   <div class="main-container">
-    <!-- LEFT COLUMN: Chat Sessions -->
     <div class="left-column sidebar">
       <div class="header">
         Previous Chats
-        <button id="new_chat_btn" class="new-chat-btn"><i class="fas fa-plus"></i></button>
+        <button class="new-chat-btn" id="new_chat_btn"><i data-lucide="plus-circle"></i></button>
       </div>
-      <div class="chat-list">
-        <!-- Chat sessions loaded dynamically -->
-      </div>
+      <div class="chat-list"></div>
     </div>
 
-    <!-- MIDDLE COLUMN: Chat Window -->
     <div class="middle-column">
       <div class="chat_window_header">
         Chat Window
-        <button id="delete_chat_btn" title="Delete Conversation">
-          <i class="fas fa-trash"></i>
-        </button>
+        <button id="delete_chat_btn" title="Delete Conversation"><i data-lucide="trash-2"></i></button>
       </div>
 
-      <!-- Placeholder for empty chat -->
       <div class="empty-chat-placeholder" style="display: none; text-align: center; padding: 60px 20px; color: #999; font-size: 15px;">
-        <img src="/static/bot.png" style="max-width: 180px; margin-bottom: 20px;"/>
+        <img src="/static/bot.png" style="max-width: 180px; margin-bottom: 20px;" />
         <p>Start chatting to get smart shopping assistance!</p>
       </div>
 
@@ -85,323 +60,20 @@
 
       <div class="bottom_wrapper clearfix">
         <div class="message_input_wrapper">
-          <input class="message_input" placeholder="Type your message here..."/>
+          <input class="message_input" placeholder="Type your message here..." />
         </div>
-        <div class="send_message">
-          <i class="fas fa-paper-plane"></i>
-        </div>
+        <div class="send_message"><i data-lucide="send"></i></div>
       </div>
 
-      <!-- Hidden message template -->
       <div class="message_template">
         <li class="message">
-          <div class="text_wrapper">
-            <div class="text"></div>
-          </div>
+          <div class="text_wrapper"><div class="text"></div></div>
           <div class="timestamp">12:00</div>
         </li>
       </div>
     </div>
   </div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  <!-- Include chat and dropdown logic here -->
-  <!-- Include chat and dropdown logic here -->
-  <script>
-    // Global variable for the current session id
-    var currentSessionId = null;
-    var selectedStoreID = null;
-
-    // Message constructor for chat messages
-    var Message = function(arg) {
-      this.text = arg.text;
-      this.message_side = arg.message_side;
-      this.draw = function() {
-        var $message = $($('.message_template').clone().html());
-        $message.addClass(this.message_side).find('.text').html(this.text);
-        $('.messages').append($message);
-        setTimeout(function() {
-          $message.addClass('appeared');
-        }, 0);
-      };
-    };
-
-    // Load chat sessions for the user
-    function loadChatSessions() {
-      $.getJSON("/chat_sessions", function(data) {
-        var $chatList = $('.chat-list');
-        $chatList.empty();
-        if (data.length === 0) {
-          createNewChat();
-        } else {
-          data.forEach(function(session) {
-            var $sessionItem = $('<div class="chat-list-item" data-session-id="' + session.session_id + '" data-store-id="' + session.store_id + '"><div class="avatar"></div><div class="chat-info"><div class="chat-name">' + session.title + '</div><div class="chat-snippet">' + session.snippet + '</div></div></div>');
-            $chatList.append($sessionItem);
-          });
-
-          if (!currentSessionId) {
-            currentSessionId = data[0].session_id;
-            loadChatHistory(currentSessionId);
-          }
-        }
-      });
-    }
-    
-    $(function() {
-  $('#sidebarToggle').click(function () {
-    $('.left-column').toggleClass('open');
-  });
-
-  $(document).click(function (e) {
-    if (
-      !$(e.target).closest('.left-column').length &&
-      !$(e.target).closest('#sidebarToggle').length
-    ) {
-      $('.left-column').removeClass('open');
-    }
-  });
-});
-
-
-    // Create a new chat session
-    function createNewChat() {
-      $.ajax({
-        url: "/new_chat",
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({ title: "New Chat", store_id: selectedStoreID }),
-        success: function(data) {
-          currentSessionId = data.session_id;
-          loadChatSessions();
-          loadChatHistory(currentSessionId);
-        },
-        error: function() {
-          console.error("Failed to create new chat");
-        }
-      });
-    }
-
-    function loadChatHistory(sessionId) {
-      if (!sessionId || sessionId === "undefined") {
-        console.error("Invalid session id:", sessionId);
-        return;
-      }
-      $.getJSON("/chat_history", { session_id: sessionId }, function(data) {
-        var $messages = $('.messages');
-        $messages.empty();
-        if (data.length === 0) {
-          var initialMsg = new Message({ text: 'How can I help you today?', message_side: 'left' });
-          initialMsg.draw();
-        } else {
-          data.forEach(function(msg) {
-            var side = (msg.sender === 'user') ? 'right' : 'left';
-            var message = new Message({ text: msg.message, message_side: side });
-            message.draw();
-          });
-        }
-        $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
-      });
-    }
-
-    function loadStores() {
-      $.getJSON("/stores", function(data) {
-        window.globalStores = data; // store globally for lookup
-        var $modalSelect = $("#modalStoreSelect");
-        $modalSelect.empty();
-        $modalSelect.append($("<option>", { value: "", text: "Choose a store..." }));
-        data.forEach(function(store) {
-          $modalSelect.append($("<option>", { 
-            value: store.store_id, 
-            text: store.name 
-          }));
-        });
-      });
-    }
-
-    // Send a message in the current session
-    function sendMessage(text) {
-      if (text.trim() === "") return;
-      $(".message_input").val("");
-      var $messages = $(".messages");
-      var userMsg = new Message({ text: text, message_side: "right" });
-      userMsg.draw();
-      $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
-
-      $.ajax({
-        url: "/get",
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-          msg: text,
-          session_id: currentSessionId,
-          store_id: selectedStoreID,
-        }),
-        success: function(data) {
-          var botMsg = new Message({ text: data.response, message_side: "left" });
-          botMsg.draw();
-          $messages.animate({ scrollTop: $messages.prop("scrollHeight") }, 300);
-        },
-        error: function() {
-          console.error("Failed to send message");
-        }
-      });
-    }
-
-    // Dropdown logic for settings and avatar   
-    $(function() {
-      $('#settings-btn').click(function(event) {
-        $('#settings-dropdown').toggleClass('show');
-        event.stopPropagation();
-      });
-      
-      $(document).click(function() {
-        $('#settings-dropdown').removeClass('show');
-      });
-      
-      $('#settings-dropdown button').on('click', function(e) {
-        var targetUrl = $(this).data('target');
-        $('#settings-dropdown').removeClass('show');
-        if (targetUrl) {
-          e.preventDefault();
-          setTimeout(function() {
-            window.location.href = targetUrl;
-          }, 100);
-        }
-      });
-
-      $('#avatar-dropdown').on('click', function(event) {
-        event.stopPropagation();
-      });
-      
-      $('#avatar-dropdown button').on('click', function(e) {
-        var targetUrl = $(this).data('target');
-        $('#avatar-dropdown').removeClass('show');
-        if (targetUrl) {
-          e.preventDefault();
-          setTimeout(function() {
-            window.location.href = targetUrl;
-          }, 100);
-        }
-      });
-    });
-
-    $(function() {
-      $('#user-avatar').click(function(event) {
-        $('#avatar-dropdown').toggleClass('show');
-        event.stopPropagation();
-      });
-      $(document).click(function() {
-        $('#avatar-dropdown').removeClass('show');
-      });
-      
-      $('#new_chat_btn').click(function() {
-        // Open the modal for store selection
-        $('#storeSelectionModal').modal('show');
-      });
-
-      loadChatSessions();
-      
-      $(document).on('click', '.chat-list-item', function() {
-        currentSessionId = $(this).data('session-id');
-        var storeId = $(this).data('store-id');
-        if (storeId) {
-          // Lookup the store name from the global stores array
-          var store = window.globalStores.find(function(s) {
-            return s.store_id == storeId;
-          });
-          var storeName = store ? store.name : "Undefined";
-          $(".top_menu .title").text(storeName); // Updated to remove "Smart Cart - "
-        } else {
-          $(".top_menu .title").text("Smart Cart");
-        }
-        loadChatHistory(currentSessionId);
-      });
-
-      $('.send_message').click(function() {
-        sendMessage($('.message_input').val());
-      });
-      
-      $('.message_input').keyup(function(e) {
-        if (e.which === 13) {
-          sendMessage($('.message_input').val());
-        }
-      });
-      
-      $('#delete_chat_btn').click(function() {
-        if (currentSessionId === null) {
-          console.error("No chat session selected.");
-          return;
-        }
-        if (confirm("Are you sure you want to delete this conversation? This action cannot be undone.")) {
-          $.ajax({
-            url: "/delete_chat_history",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ session_id: currentSessionId }),
-            success: function(response) {
-              console.log(response.message);
-              loadChatSessions();
-              $('.messages').empty();
-              currentSessionId = null;
-            },
-            error: function() {
-              console.error("Failed to delete conversation");
-            }
-          });
-        }
-      });
-
-      loadChatSessions();
-      loadStores();
-
-      $("#storeSelect").change(function() {
-        selectedStoreID = $(this).val();
-        console.log("User selected store ID:", selectedStoreID);
-      });
-
-      $(".send_message").click(function() {
-        sendMessage($(".message_input").val());
-      });
-
-      $(".message_input").keyup(function(e) {
-        if (e.which === 13) {
-          sendMessage($(".message_input").val());
-        }
-      });
-
-      $("#createChatWithStore").click(function() {
-        var storeId = $("#modalStoreSelect").val();
-        if (!storeId) {
-          alert("Please select a store.");
-          return;
-        }
-        // Get the store name from the selected option.
-        var storeName = $("#modalStoreSelect option:selected").text();
-        // Update the header with the selected store's name.
-        $(".top_menu .title").text(storeName);
-        
-        // Set the global variable for the new chat creation.
-        selectedStoreID = storeId;
-        createNewChat();
-        $('#storeSelectionModal').modal('hide');
-      });
-    });
-  </script>
-  {% if not current_user.is_authenticated %}
-  <script>
-    $(document).ready(function() {
-      var $messages = $('.messages');
-      $messages.empty();
-      var defaultMsg = new Message({
-        text: "To get help around your favorite stores log-in and start a new chat!",
-        message_side: "left"
-      });
-      defaultMsg.draw();
-    });
-  </script>
-  {% endif %}
-  <!-- Store Selection Modal -->
   <div class="modal fade" id="storeSelectionModal" tabindex="-1" role="dialog" aria-labelledby="storeSelectionModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -412,16 +84,227 @@
           </button>
         </div>
         <div class="modal-body">
-          <select id="modalStoreSelect" class="form-control">
+          <select class="form-control" id="modalStoreSelect">
             <option value="">Choose a store...</option>
           </select>
         </div>
         <div class="modal-footer">
-          <button type="button" id="createChatWithStore" class="btn btn-primary">Create Chat</button>
+          <button class="btn btn-primary" id="createChatWithStore" type="button">Create Chat</button>
         </div>
       </div>
     </div>
   </div>
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>lucide.createIcons();</script>
+
+<script>
+// SmartCart Chat Logic
+let currentSessionId = null;
+let selectedStoreID = null;
+
+class Message {
+  constructor({ text, message_side, timestamp }) {
+    this.text = text;
+    this.message_side = message_side;
+    this.timestamp = timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  draw() {
+    const $message = $($('.message_template').clone().html());
+    $message.addClass(this.message_side).find('.text').html(this.text);
+    $message.find('.timestamp').text(this.timestamp);
+    $('.messages').append($message);
+    setTimeout(() => $message.addClass('appeared'), 0);
+  }
+}
+
+function showThinkingIndicator() {
+  console.log("🧠 showThinkingIndicator() was called");
+
+  hideThinkingIndicator(); // in case it was already there
+
+  const $thinking = $(`
+    <li class="thinking message left" id="thinking-indicator">
+      <div class="text_wrapper">
+        <div class="text">
+          SmartCart is thinking<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+        </div>
+      </div>
+    </li>
+  `);
+
+  console.log("Appending thinking bubble:");
+  console.log($thinking.prop('outerHTML'));
+
+  const $messages = $('.messages');
+  console.log("Messages container found?", $messages.length != 0);
+  $messages.append($thinking);
+  $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+}
+
+function hideThinkingIndicator() {
+  $('#thinking-indicator').remove();
+}
+
+function sendMessage(text) {
+  if (!text.trim()) return;
+  $('.message_input').val('');
+  new Message({ text, message_side: 'right' }).draw();
+  $('.messages').animate({ scrollTop: $('.messages').prop('scrollHeight') }, 300);
+  showThinkingIndicator();
+  $.ajax({
+    url: '/get',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ msg: text, session_id: currentSessionId, store_id: selectedStoreID }),
+    success(data) {
+      hideThinkingIndicator();
+      new Message({ text: data.response, message_side: 'left' }).draw();
+      $('.messages').animate({ scrollTop: $('.messages').prop('scrollHeight') }, 300);
+    },
+    error() {
+      console.error('Failed to send message');
+      hideThinkingIndicator();
+    }
+  });
+}
+
+function loadChatSessions() {
+  $.getJSON('/chat_sessions', function (data) {
+    const $chatList = $('.chat-list');
+    $chatList.empty();
+    if (!data.length) {
+      createNewChat();
+    } else {
+      data.forEach(session => {
+        const $sessionItem = $(`
+          <div class="chat-list-item" data-session-id="${session.session_id}" data-store-id="${session.store_id}">
+            <div class="avatar"></div>
+            <div class="chat-info">
+              <div class="chat-name">${session.title}</div>
+              <div class="chat-snippet">${session.snippet}</div>
+            </div>
+          </div>
+        `);
+        $chatList.append($sessionItem);
+      });
+      if (!currentSessionId) {
+        currentSessionId = data[0].session_id;
+        loadChatHistory(currentSessionId);
+      }
+    }
+  });
+}
+
+function loadChatHistory(sessionId) {
+  if (!sessionId) return console.error('Invalid session id:', sessionId);
+  $.getJSON('/chat_history', { session_id: sessionId }, function (data) {
+    const $messages = $('.messages');
+    $messages.empty();
+    if (!data.length) {
+      new Message({ text: 'How can I help you today?', message_side: 'left' }).draw();
+    } else {
+      data.forEach(msg => {
+        new Message({ text: msg.message, message_side: msg.sender === 'user' ? 'right' : 'left' }).draw();
+      });
+    }
+    $messages.animate({ scrollTop: $messages.prop('scrollHeight') }, 300);
+  });
+}
+
+function createNewChat() {
+  $.post('/new_chat', JSON.stringify({ title: 'New Chat', store_id: selectedStoreID }), function (data) {
+    currentSessionId = data.session_id;
+    loadChatSessions();
+    loadChatHistory(currentSessionId);
+  }, 'json').fail(() => console.error('Failed to create new chat'));
+}
+
+function loadStores() {
+  $.getJSON('/stores', function (data) {
+    window.globalStores = data;
+    const $select = $('#modalStoreSelect').empty().append('<option value="">Choose a store...</option>');
+    data.forEach(store => {
+      $select.append(`<option value="${store.store_id}">${store.name}</option>`);
+    });
+  });
+}
+
+$(function () {
+  $('#sidebarToggle').click(() => $('.left-column').toggleClass('open'));
+  $(document).click(e => {
+    if (!$(e.target).closest('.left-column, #sidebarToggle').length) {
+      $('.left-column').removeClass('open');
+    }
+  });
+
+  $('#settings-btn').click(e => {
+    $('#settings-dropdown').toggleClass('show');
+    e.stopPropagation();
+  });
+  $(document).click(() => $('#settings-dropdown').removeClass('show'));
+
+  $('#new_chat_btn').click(() => $('#storeSelectionModal').modal('show'));
+
+  $(document).on('click', '.chat-list-item', function () {
+    currentSessionId = $(this).data('session-id');
+    selectedStoreID = $(this).data('store-id');
+    const store = window.globalStores?.find(s => s.store_id == selectedStoreID);
+    $('.top_menu .title').text(store?.name || 'Smart Cart');
+    loadChatHistory(currentSessionId);
+  });
+
+  $('.send_message').click(() => sendMessage($('.message_input').val()));
+  $('.message_input').keyup(e => { if (e.which === 13) sendMessage($('.message_input').val()); });
+
+  $('#delete_chat_btn').click(() => {
+    if (!currentSessionId) return console.error('No chat session selected.');
+    if (confirm('Are you sure you want to delete this conversation?')) {
+      $.post('/delete_chat_history', JSON.stringify({ session_id: currentSessionId }), function () {
+        loadChatSessions();
+        $('.messages').empty();
+        currentSessionId = null;
+      }, 'json').fail(() => console.error('Failed to delete conversation'));
+    }
+  });
+
+  $('#createChatWithStore').click(() => {
+    const storeId = $('#modalStoreSelect').val();
+    if (!storeId) return alert('Please select a store.');
+    const storeName = $('#modalStoreSelect option:selected').text();
+    $('.top_menu .title').text(storeName);
+    selectedStoreID = storeId;
+    createNewChat();
+    $('#storeSelectionModal').modal('hide');
+  });
+
+  loadChatSessions();
+  loadStores();
+});
+
+  </script>
+  <!-- Store Selection Modal -->
+<div aria-hidden="true" aria-labelledby="storeSelectionModalLabel" class="modal fade" id="storeSelectionModal" role="dialog" tabindex="-1">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="storeSelectionModalLabel">Select a Store</h5>
+<button aria-label="Close" class="close" data-dismiss="modal" type="button">
+<span aria-hidden="true">×</span>
+</button>
+</div>
+<div class="modal-body">
+<select class="form-control" id="modalStoreSelect">
+<option value="">Choose a store...</option>
+</select>
+</div>
+<div class="modal-footer">
+<button class="btn btn-primary" id="createChatWithStore" type="button">Create Chat</button>
+</div>
+</div>
+</div>
+</div>
 </body>
 </html>

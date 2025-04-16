@@ -33,9 +33,9 @@ body {
 
 .top_menu .user_info {
   position: absolute;
-  right: 8px;
+  right: 10px;
   top: 50%;
-  margin-top: 5px;
+  margin-top: 0px;
   margin-right: 5px;
   transform: translateY(-50%);
 }
@@ -89,14 +89,60 @@ body {
   margin-left: 5px;
 }
 
+#thinking-indicator {
+  background: rgba(0,0,0,0.05);
+  border: 1px dashed red;
+}
+
+@keyframes blink {
+  0% { opacity: 0.2; }
+  20% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+
+#thinking-indicator.dot {
+  animation-name: blink;
+  animation-duration: 1.4s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  margin-left: 2px;
+}
+
+#thinking-indicator.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+#thinking-indicator.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+#thinking-indicator.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+
+@media (max-width: 911px) {
+  .top_menu svg {
+    stroke: white !important;
+  }
+
+  .top-logo {
+    filter: invert(1) brightness(2) !important;
+  }
+}
+
+@media (min-width: 911px) {
+  .top_menu svg {
+    stroke: black !important;
+  }
+
+  .top-logo {
+    filter: none !important;
+  }
+}
+
 /* Add this to your media query for mobile */
 @media (max-width: 911px) {
   .left-column {
     display: none;
-  }
-
-  .top_menu .user_info {
-    margin-top: 0;
   }
 
   .left-column.sidebar {
@@ -105,6 +151,15 @@ body {
 
   .logo-container {
     display: none;
+  }
+
+  .top_menu .user_info {
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    margin-top: 2px;
+    margin-right: 5px;
+    transform: translateY(-50%);
   }
 
   body{
@@ -127,9 +182,9 @@ body {
   }
   
   .middle-column {
-    margin-left: 0.75% !important;
-    width: 98.5% !important;
-    border-radius: 7px !important;
+    margin-left: 1% !important;
+    width: 98% !important;
+    border-radius: 10px !important;
     height: calc(100vh - 140px) !important;
   }
   body {
@@ -225,7 +280,6 @@ body {
 
 } 
 
-
 .chat_window_header {
   padding: 17px 20px;
   background-color: #e9eef3;
@@ -258,7 +312,6 @@ body {
   max-height: calc(100vh - 120px); /* Adjust based on top + input bar height */
 
 }
-
 
 .message {
   display: flex;
@@ -403,11 +456,12 @@ body {
     display: inline-block;
     background: none;
     border: none;
-    color: #fff;
-    font-size: 30px;
+    color: #000000;
+    font-size: 40px;
     margin-right: 15px;
     z-index: 1100;
     left: 10px;
+    margin-bottom: 10px;
     position: absolute;
   }
 }
@@ -416,4 +470,17 @@ body {
   .menu-toggle {
     display: none;
   }
+}
+
+
+.thinking.message.left .text_wrapper {
+  background-color: #205ed8;
+  color: #fff;
+  margin-left: 10px;
+  box-shadow: 3px 2px 7px rgba(0, 0, 0, 0.305);
+  align-self: flex-start;
+  border-radius: 16px;
+  padding: 14px 20px;
+  max-width: 70%;
+  font-size: 14px;
 }
