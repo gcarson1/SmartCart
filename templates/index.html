@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Smart Cart AI</title>
+  <title>SmartCart</title>
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
@@ -47,7 +47,7 @@
 
     <div class="middle-column">
       <div class="chat_window_header">
-        Chat Window
+        <span id="chat-header-title">Chat</span>
         <button style="margin-bottom:5px" id="delete_chat_btn" title="Delete Conversation"><i data-lucide="trash-2"></i></button>
       </div>
 
@@ -248,11 +248,20 @@ $(function () {
 
   $('#new_chat_btn').click(() => $('#storeSelectionModal').modal('show'));
 
+  $(document).on('keydown', function(e) {
+  if (e.key === "Escape") {
+    $('.left-column').removeClass('open');
+  }
+});
+
   $(document).on('click', '.chat-list-item', function () {
     currentSessionId = $(this).data('session-id');
     selectedStoreID = $(this).data('store-id');
     const store = window.globalStores?.find(s => s.store_id == selectedStoreID);
     $('.top_menu .title').text(store?.name || 'Smart Cart');
+    $('#chat-header-title').text(`${store?.name || 'SmartCart'} Chat`);
+    $('.left-column').removeClass('open');
+
     loadChatHistory(currentSessionId);
   });
 

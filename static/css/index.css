@@ -440,9 +440,9 @@ body {
 
   .left-column.sidebar {
     position: fixed;
-    top: 50px;
-    left: -260px;
-    height: calc(100vh - 190px);
+    top: 45px;
+    left: -250px;
+    height: 79.7%;
     width: 250px;
     background: #f9fdff;
     transition: left 0.3s ease-in-out;
@@ -454,7 +454,7 @@ body {
   }
 
   .left-column.sidebar.open {
-    left: 5px;
+    left: 1%;
   }
 
   .menu-toggle {
