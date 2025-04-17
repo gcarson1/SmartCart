@@ -1,37 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Smart Cart - User Login</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 
-  <!-- Bootstrap (Optional) -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/user_login.css') }}">
+  <style>
+    .main-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: calc(100vh - 60px);
+      padding: 20px;
+    }
 
+    .login-wrapper {
+      background-color: #fff;
+      width: 350px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-wrapper h2 {
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+      color: #2d5996;
+    }
+
+    .login-wrapper .form-group label {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .login-wrapper .form-control {
+      border-radius: 8px;
+    }
+
+    .btn-primary {
+      background-color: #366CD9;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .btn-primary:hover {
+      background-color: #2b54aa;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+
+    .signup-btn {
+      margin-top: 10px;
+    }
+
+    .error-message {
+      color: red; 
+      text-align: center;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
   <!-- Top Bar -->
   <div class="top_menu">
-    <div style="flex: 1;"></div> <!-- Empty spacer to push to right -->
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='default-monochrome-white.svg') }}" alt="SmartCart Logo" class="top-logo" />
+    </div>
+    <div class="title">User Login</div>
     <div class="user_info">
       <a href="/" class="main-return">
-        <img src="static/main-return.png" alt="Return to main page" />
+        <img src="{{ url_for('static', filename='main-return.png') }}" alt="Return to main page" />
       </a>
     </div>
   </div>
 
-  <!-- Main Container -->
+  <!-- Login Form Container -->
   <div class="main-container">
     <div class="login-wrapper">
       <h2>User Login</h2>
+
       {% if error %}
         <div class="error-message">{{ error }}</div>
       {% endif %}
-      <!-- POST form to /user_login -->
+
       <form method="POST" action="/user_login">
         <div class="form-group">
           <label for="username">Username:</label>
@@ -41,13 +107,11 @@
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" />
         </div>
-        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
       </form>
 
-      
-      <!-- Sign Up Button -->
       <div class="text-center signup-btn">
-        <a href="/signup" class="btn btn-secondary">Sign Up</a>
+        <a href="/signup" class="btn btn-secondary btn-block">Sign Up</a>
       </div>
     </div>
   </div>

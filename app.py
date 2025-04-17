@@ -21,7 +21,6 @@ def create_app():
 
     app.config.from_object("config.Config")
 
-
     db.init_app(app)
     login_manager.init_app(app)
     oauth.init_app(app)
@@ -45,5 +44,6 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
+
 

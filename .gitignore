@@ -2,3 +2,5 @@ venv/
 .env
 chat_history.txt
 postgres.sql
+Dockerfile
+.dockerignore

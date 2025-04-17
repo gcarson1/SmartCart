@@ -130,9 +130,6 @@ body {
 
   }
 
-  .top-logo {
-    filter: invert(1) brightness(2) !important;
-  }
 }
 
 @media (min-width: 911px) {

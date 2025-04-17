@@ -13,7 +13,7 @@
     .sidebar .nav-link:hover { background-color: #22477a; text-decoration: none; }
     .sidebar .nav-link i { margin-right: 8px; }
     /* Main Container */
-    .main-container { margin-top: 60px; margin-left: 220px; padding: 20px; min-height: calc(100vh - 60px); }
+    .main-container { margin-left: 220px; padding: 20px; min-height: calc(100vh - 60px); }
     /* Content Wrapper */
     .content-wrapper { background-color: #fff; width: 100%; max-width: 800px; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     .content-wrapper h2 { margin-bottom: 25px; text-align: center; font-size: 22px; color: #333; }
