@@ -20,13 +20,8 @@ def new_chat():
         title = f"{store_name} Chat {count + 1}"
     else:
         title = "New Chat"
-    thread = client.beta.threads.create()
-    new_session = ChatSession(
-        user_id=current_user.user_id,
-        title=title,
-        store_id=store_id,
-        thread_id=thread.id  # <-- Save it
-    )    
+        
+    new_session = ChatSession(user_id=current_user.user_id, title=title, store_id=store_id)
     db.session.add(new_session)
     db.session.commit()
     return jsonify({"session_id": new_session.session_id, "title": new_session.title})
@@ -119,6 +114,7 @@ def delete_chat_history():
     session_id = data.get("session_id")
     if not session_id:
         return jsonify({"error": "No session id provided."}), 400
+
     try:
         session_id = int(session_id)
     except ValueError:
@@ -131,5 +127,5 @@ def delete_chat_history():
     ChatMessage.query.filter_by(session_id=session_id, user_id=current_user.user_id).delete()
     db.session.delete(session_to_delete)
     db.session.commit()
-
+    
     return jsonify({"message": "Chat session deleted successfully."})

@@ -227,11 +227,20 @@ function loadChatHistory(sessionId) {
 }
 
 function createNewChat() {
-  $.post('/new_chat', JSON.stringify({ title: 'New Chat', store_id: selectedStoreID }), function (data) {
-    currentSessionId = data.session_id;
-    loadChatSessions();
-    loadChatHistory(currentSessionId);
-  }, 'json').fail(() => console.error('Failed to create new chat'));
+  $.ajax({
+    url: "/new_chat",
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({ title: "New Chat", store_id: selectedStoreID }),
+    success: function(data) {
+      currentSessionId = data.session_id;
+      loadChatSessions();
+      loadChatHistory(currentSessionId);
+    },
+    error: function() {
+      console.error("Failed to create new chat");
+    }
+  });
 }
 
 function loadStores() {
@@ -280,16 +289,31 @@ $(function () {
   $('.send_message').click(() => sendMessage($('.message_input').val()));
   $('.message_input').keyup(e => { if (e.which === 13) sendMessage($('.message_input').val()); });
 
-  $('#delete_chat_btn').click(() => {
-    if (!currentSessionId) return console.error('No chat session selected.');
-    if (confirm('Are you sure you want to delete this conversation?')) {
-      $.post('/delete_chat_history', JSON.stringify({ session_id: currentSessionId }), function () {
-        loadChatSessions();
-        $('.messages').empty();
-        currentSessionId = null;
-      }, 'json').fail(() => console.error('Failed to delete conversation'));
+  $('#delete_chat_btn').click(function() {
+    if (currentSessionId === null) {
+      console.error("No chat session selected.");
+      return;
+    }
+    if (confirm("Are you sure you want to delete this conversation? This action cannot be undone.")) {
+      $.ajax({
+        url: "/delete_chat_history",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ session_id: currentSessionId }),
+        success: function(response) {
+          console.log(response.message);
+          loadChatSessions();
+          $('.messages').empty();
+          currentSessionId = null;
+        },
+        error: function() {
+          console.error("Failed to delete conversation");
+        }
+      });
     }
   });
+  loadStores();
+
 
   $('#createChatWithStore').click(() => {
     const storeId = $('#modalStoreSelect').val();

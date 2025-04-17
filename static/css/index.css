@@ -264,12 +264,12 @@ body {
 
 .chat-name {
   font-weight: 500;
-  color: #7f7f7f;
+  color: #346ad7;
 }
 
 .chat-snippet {
   font-size: 13px;
-  color: #888;
+  color: #a6a6a6;
   margin-top: 4px;
 }
 
@@ -337,10 +337,10 @@ body {
 }
 
 .text_wrapper {
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 14px 20px;
   max-width: 70%;
-  font-size: 14px;
+  font-size: 16px;
   transition: all 0.3s ease-in-out;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.042);
 }
@@ -370,8 +370,8 @@ body {
 }
 
 .message .timestamp {
-  font-size: 11px;
-  color: #cccbcb;
+  font-size: 10px;
+  color: #c2c2c2;
   margin-top: 4px;
   padding: 0 16px;
 }
