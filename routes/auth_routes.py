@@ -88,3 +88,29 @@ def google_authorize():
 
     login_user(user)
     return redirect(url_for('general.index'))
+
+@auth_bp.route('/admin_signup', methods=['GET', 'POST'])
+def admin_signup():
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        email = request.form.get('email')
+
+        if not username or not password or not confirm_password:
+            error = "All fields are required."
+        elif password != confirm_password:
+            error = "Passwords do not match."
+        else:
+            existing_user = User.query.filter_by(username=username).first()
+            if existing_user:
+                error = "Username already exists."
+            else:
+                new_admin = User(username=username, email=email, is_admin=True)
+                new_admin.set_password(password)
+                db.session.add(new_admin)
+                db.session.commit()
+                return redirect(url_for('auth.admin_login'))
+
+    return render_template('admin_signup.html', error=error)

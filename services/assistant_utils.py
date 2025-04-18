@@ -25,7 +25,7 @@ def create_dynamic_assistant(txt_file):
     try:
         assistant = client.beta.assistants.create(
             name=f"Dynamic Assistant {int(time.time())}",
-            instructions="You are a helpful assistant that uses file search to answer questions based on the uploaded document.",
+            instructions="You are a helpful retail store assistant and your name is SmartCart. You use file search to answer questions based on the  inventory data. Be brief, accurate, and friendly. If you can't find the answer in the document you may answer from outside sources only if the question was about something that is in the document for example if the document has doritos and the user asks if wheat is in doritos you are allowed to look at other sources to answer it. Dont be scared to use an emoji in your responses for characater.",
             model="gpt-4o-mini",
             tools=[{"type": "file_search"}],
             tool_resources={

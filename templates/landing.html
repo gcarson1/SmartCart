@@ -12,6 +12,7 @@
       background: linear-gradient(180deg, #366CD9 10%, #547fd5 100%);
       color: #fff;
       font-family: 'Inter', sans-serif;
+      height: 100vh;
     }
 
     .landing-hero {
@@ -28,6 +29,7 @@
 body.landing-page {
   height: auto !important;
   overflow: auto !important;
+  height: 100vh;
 }
 
 /* Hero Text Behavior */
@@ -174,17 +176,18 @@ body.landing-page {
       <h3>Seamless Planning</h3>
       <p>Receive recipe suggestions and build your grocery list in real time.</p>
     </div>
-    <div class="admin-signup-cta" style="background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 40px; text-align: center;">
-        <h3 style="color: #366CD9; font-weight: 600; margin-bottom: 10px;">Want to add your store?</h3>
-        <p style="color: #1d1d1d; font-size: 16px; margin-bottom: 20px;">
-          Become a store admin and manage your own SmartCart storefront.
-        </p>
-        <button onclick="window.location.href='/admin_signup'" style="padding: 10px 20px; font-size: 16px; border-radius: 15px; background-color: transparent; color: #2650a5; border: 2px solid #366CD9; cursor: pointer;">
-          Sign up as Admin
-        </button>
-      </div>
-      
   </section>
+  
+  <!-- Admin Signup Panel -->
+  <div class="admin-signup-cta" style="background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 auto 40px; text-align: center; max-width: 500px;">
+    <h3 style="color: #366CD9; font-weight: 600; margin-bottom: 10px;">Want to add your store?</h3>
+    <p style="color: #1d1d1d; font-size: 16px; margin-bottom: 20px;">
+      Become a store admin and manage your own SmartCart storefront.
+    </p>
+    <button onclick="window.location.href='/admin_signup'" style="padding: 10px 20px; font-size: 16px; border-radius: 15px; background-color: transparent; color: #2650a5; border: 2px solid #366CD9; cursor: pointer;">
+      Sign up as Admin
+    </button>
+  </div>
 
   
 
