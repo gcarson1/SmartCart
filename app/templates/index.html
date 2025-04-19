@@ -8,6 +8,7 @@
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet" />
+
 </head>
 <body>
   <div class="top_menu">
@@ -22,17 +23,33 @@
       </button>
       <div class="avatar-dropdown flex-column" id="settings-dropdown">
         {% if not current_user.is_authenticated %}
-        <button class="dropdown-btn" onclick="window.location.href='/user_login'">User Sign In</button>
-        <hr />
-        <button class="dropdown-btn" onclick="window.location.href='/admin_login'">Admin Sign In</button>
+          <button class="dropdown-btn" onclick="window.location.href='/user_login'">
+            <i data-lucide="log-in" style="margin-right: 8px;"></i> User Sign In
+          </button>
+          <hr />
+          <button class="dropdown-btn" onclick="window.location.href='/admin_login'">
+            <i data-lucide="shield" style="margin-right: 8px;"></i> Admin Sign In
+          </button>
         {% elif current_user.is_authenticated and not current_user.is_admin %}
-        <button class="dropdown-btn" onclick="window.location.href='/logout'">Sign Out</button>
+          <button class="dropdown-btn" onclick="window.location.href='/logout'">
+            <i data-lucide="log-out" style="margin-right: 8px;"></i> Sign Out
+          </button>
         {% elif current_user.is_authenticated and current_user.is_admin %}
-        <button class="dropdown-btn" onclick="window.location.href='/admin_panel'">Admin Dashboard</button>
-        <hr />
-        <button class="dropdown-btn" onclick="window.location.href='/logout'">Sign Out</button>
+          <button class="dropdown-btn" onclick="window.location.href='/admin_panel'">
+            <i data-lucide="settings" style="margin-right: 8px;"></i> Admin Dashboard
+          </button>
+          <hr />
+          <button class="dropdown-btn" onclick="window.location.href='/logout'">
+            <i data-lucide="log-out" style="margin-right: 8px;"></i> Sign Out
+          </button>
         {% endif %}
+      
+        <hr />
+        <button class="dropdown-btn" onclick="toggleDarkMode()">
+          <i data-lucide="moon" style="margin-right: 8px;"></i> Toggle Dark Mode
+        </button>
       </div>
+      
     </div>
   </div>
 
@@ -48,7 +65,7 @@
     <div class="middle-column">
       <div class="chat_window_header">
         <span id="chat-header-title">Chat</span>
-        <button style="margin-bottom:5px" id="delete_chat_btn" title="Delete Conversation"><i data-lucide="trash-2"></i></button>
+        <button class="delete-chat-btn" style="margin-bottom:5px" id="delete_chat_btn" title="Delete Conversation"><i data-lucide="trash-2"></i></button>
       </div>
 
       <div class="empty-chat-placeholder" style="display: none; text-align: center; padding: 60px 20px; color: #999; font-size: 15px;">
@@ -147,6 +164,19 @@ function showThinkingIndicator() {
 function hideThinkingIndicator() {
   $('#thinking-indicator').remove();
 }
+
+function toggleDarkMode() {
+      const body = document.body;
+      const html = document.documentElement;
+      body.classList.toggle("dark-mode");
+      html.classList.toggle("dark-mode");
+
+      if (body.classList.contains("dark-mode")) {
+        localStorage.setItem("darkMode", "enabled");
+      } else {
+        localStorage.setItem("darkMode", "disabled");
+      }
+    }
 
 function sendMessage(text) {
   if (!text.trim()) return;
@@ -261,10 +291,16 @@ $(function () {
     }
   });
 
-  $('#settings-btn').click(e => {
-    $('#settings-dropdown').toggleClass('show');
-    e.stopPropagation();
-  });
+$('#settings-btn').click(e => {
+  $('#settings-dropdown').toggleClass('show');
+
+  // Manually clear and rerender icons
+  document.querySelectorAll("[data-lucide]").forEach(el => el.innerHTML = "");
+  lucide.createIcons();
+
+  e.stopPropagation();
+});
+
   $(document).click(() => $('#settings-dropdown').removeClass('show'));
 
   $('#new_chat_btn').click(() => $('#storeSelectionModal').modal('show'));

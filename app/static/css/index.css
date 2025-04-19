@@ -46,32 +46,64 @@ body {
 
 /* Avatar dropdown */
 .avatar-dropdown {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.3s ease;
   position: absolute;
-  top: 53px;
+  top: 67px;
   right: 0;
   background: #fff;
   box-shadow: 0px 2px 5px rgba(28, 28, 28, 0.3);
   border-radius: 8px;
   padding: 12px;
-  width: 140px;
-  display: none;
+  width: 180px;
   z-index: 1000;
   border: 1px solid #bdbcbc;
-}
-
-.avatar-dropdown.show {
-  display: flex;
   flex-direction: column;
 }
 
+.avatar-dropdown.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  display: flex; /* optional fallback if needed */
+}
+
 .dropdown-btn {
-  background: none;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* adds spacing between icon and text */
+  background: #f5f7fc;
   border: none;
   color: #2d5996;
   font-size: 14px;
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 10px 12px;
+  margin: 4px 0;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  text-align: left;
+  width: 100%;
+  font-weight: 500;
 }
+
+
+.dropdown-btn:hover {
+  background: #e0e8ff;
+  color: #1f3fa4;
+}
+
+.dropdown-btn i {
+  color: #205ed8;
+  stroke:   #205ed8;
+  stroke-width: 1.8; /* 1.5 is default, 2.0 is bold */
+}
+
+.dropdown-btn:hover i {
+  stroke: #1f3fa4;
+}
+
 
 /* Main Layout */
 .main-container {
@@ -92,6 +124,8 @@ body {
   margin-right: 15px;
   margin-left: 5px;
 }
+
+
 
 #thinking-indicator {
   background: rgba(0,0,0,0.05);
@@ -124,22 +158,26 @@ body {
 
 
 @media (max-width: 911px) {
-  .top_menu svg {
-    stroke: white !important;
-    margin-bottom: 8px;
-
+  .top_menu > button > svg,
+  .top_menu > .logo-container svg {
+    stroke: white;
   }
 
+  .avatar-dropdown{
+    top: 57px;
+  }
 }
 
 @media (min-width: 911px) {
-  .top_menu svg {
-    stroke: rgb(255, 255, 255) !important;
+  .top_menu > button > svg,
+  .top_menu > .logo-container svg {
+    stroke: rgb(255, 255, 255) ;
   }
 
-  .top-logo {
+  body:not(.dark-mode) .top-logo {
     filter: none !important;
   }
+
 }
 
 /* Add this to your media query for mobile */
@@ -204,6 +242,8 @@ body {
   border-radius: 15px;
   margin-right: 10px;
   border-radius: 15px;
+  box-shadow: 0px 2px 10px #0000004b !important;
+
 }
 
 .left-column .header {
@@ -217,7 +257,7 @@ body {
   align-items: center;
   justify-content: space-between;
   color: #a5a3a3;
-  text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.707);
+  text-shadow: 0px 0px 7px rgba(255, 255, 255, 0.257);
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }
@@ -226,6 +266,16 @@ body {
   margin-left: 15px;
   padding: 4px 8px;
   font-size: 14px;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+.delete-chat-btn {
+  margin-left: 15px;
+  padding: 4px 8px;
+  font-size: 14px;
+  background-color: transparent;
   border: none;
   outline: none;
 }
@@ -292,7 +342,7 @@ body {
   font-size: 16px;
   font-weight: 500;
   color: #a5a3a3;
-  text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.497);
+  text-shadow: 0px 0px 7px rgba(255, 255, 255, 0.255);
   z-index: 1;
   height: 61px;
   position: relative;
@@ -313,7 +363,6 @@ body {
   list-style: none;
   flex: 1;
   overflow-y: auto;
-  background-color: #e9eef363;
   padding: 20px 10px 80px 10px; /* <- leave space for input */
   max-height: calc(100vh - 120px); /* Adjust based on top + input bar height */
 
@@ -340,6 +389,86 @@ body {
   font-size: 16px;
   transition: all 0.3s ease-in-out;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.042);
+}
+
+body.dark-mode {
+  color: #eaeaea;
+}
+
+
+.dark-mode .middle-column,
+.dark-mode .left-column {
+  background-color: #202020 !important;
+  box-shadow: 0px 2px 10px #0000004b !important;
+}
+
+.dark-mode .avatar-dropdown {
+  background-color: #2c2c2c !important;
+  border-color: #444 !important;
+}
+
+.dark-mode .dropdown-btn {
+  background-color: #333 !important;
+  color: #eee !important;
+}
+
+.dark-mode .dropdown-btn:hover {
+  background-color: #444 !important;
+}
+
+.dark-mode .left-column .header,
+.dark-mode .chat_window_header,
+.dark-mode .bottom_wrapper {
+  background-color: #1e1e1e !important;
+  color: #f1f1f1 !important;
+  border-color: #333 !important;
+}
+
+.dark-mode .message_input_wrapper {
+  border-color: #444 !important;
+}
+
+.dark-mode .message_input {
+  background-color: #2c2c2c !important;
+  color: #fff !important;
+}
+
+.dark-mode .send_message {
+  background-color: #2c2c2c !important;
+  color: #fff !important;
+}
+
+.dark-mode .new-chat-btn {
+  color: #fff !important;
+}
+.dark-mode .delete-chat-btn {
+  color: #fff !important;
+}
+
+.dark-mode .chat-list-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  margin: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #101010;
+  border-top: 1px solid #353535;
+  transition: background 0.2s;
+  box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.042);
+  border-radius: 10px;
+}
+
+.dark-mode .chat-list-item:hover {
+  background-color: #252930ab;
+  scale: 1.02;
+}
+
+body.dark-mode .top-logo {
+  filter: invert(1) brightness(0.1);
+}
+
+.dark-mode .top_menu #settings-btn svg {
+  stroke: black;
 }
 
 .message.left {
@@ -492,15 +621,26 @@ body {
   font-size: 14px;
 }
 
-
-/* Prevent icon color change on tap (mobile) */
-button i[data-lucide], 
-.new-chat-btn i[data-lucide] {
-  color: inherit !important;
-  stroke: inherit !important;
-  -webkit-tap-highlight-color: transparent;
+.avatar-dropdown .dropdown-btn i {
+  stroke: #205ed8 !important;
+  color: #205ed8 !important;
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.8;
+  flex-shrink: 0;
 }
 
+#settings-btn i {
+  stroke: white;
+  color: white;
+}
+#settings-btn svg {
+  stroke: white;
+  color: white;
+}
+.top_menu #settings-btn svg {
+  stroke: white;
+}
 /* Optional: remove tap highlight globally */
 * {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
