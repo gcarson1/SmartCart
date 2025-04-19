@@ -1,10 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from app.extensions import db
 # Initialize SQLAlchemy (should be re-initialized in create_app)
-db = SQLAlchemy()
-
 class Store(db.Model):
     __tablename__ = 'stores'
     store_id = db.Column(db.Integer, primary_key=True)

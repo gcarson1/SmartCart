@@ -1,7 +1,8 @@
 from flask import Blueprint, request, redirect, url_for, render_template, jsonify
 from flask_login import login_required, current_user
-from models.models import db, Store
-from services.assistant_utils import create_dynamic_assistant
+from app.models.models import Store
+from app.extensions import db
+from app.services.assistant_utils import create_dynamic_assistant
 import time
 
 admin_bp = Blueprint("admin", __name__)
@@ -42,7 +43,7 @@ def admin_panel():
             if txt_file:
                 try:
                     if store.assistant_id:
-                        from services.openai_service import client
+                        from app.services.openai_service import client
                         uploaded_file = client.files.create(
                             file=(txt_file.filename, txt_file.stream, "text/plain"),
                             purpose="assistants"
@@ -79,7 +80,7 @@ def admin_panel():
 @admin_bp.route('/update_inventory', methods=["GET", "POST"])
 @login_required
 def update_inventory():
-    from services.openai_service import client
+    from app.services.openai_service import client
     store = Store.query.filter_by(user_id=current_user.user_id).first()
     if not store:
         return redirect(url_for('admin.admin_panel'))
@@ -155,7 +156,7 @@ def list_stores():
 
 @admin_bp.route('/delete_uploaded_file', methods=["POST"])
 def delete_uploaded_file():
-    from services.openai_service import client
+    from app.services.openai_service import client
     data = request.get_json() or {}
     file_id = data.get("file_id")
     if not file_id:

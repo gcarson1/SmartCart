@@ -1,5 +1,5 @@
 import time
-from services.openai_service import client
+from app.services.openai_service import client
 
 def create_dynamic_assistant(txt_file):
     txt_file.seek(0)

@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from models.models import db, ChatSession, ChatMessage, Store
-from services.openai_service import run_assistant, run_assistant_for_store
-from services.openai_service import client
+from app.models.models import ChatSession, ChatMessage, Store
+from app.extensions import db
+from app.services.openai_service import run_assistant, run_assistant_for_store
+from app.services.openai_service import client
 from sqlalchemy import desc
 
 
