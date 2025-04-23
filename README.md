@@ -1,87 +1,105 @@
-🛒 SmartCart
+# 🛒 SmartCart
 
-SmartCart is a GenAI-powered retail assistant chatbot that helps users find products, check inventory, and navigate grocery stores with natural language queries. It leverages OpenAI Assistants and vector search to deliver personalized, context-aware responses based on each store’s inventory data.
+[![Python Version](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
 
-🚀 Key Features
+A **GenAI-powered** retail assistant chatbot that guides shoppers through grocery stores, answers inventory questions, and builds shopping lists—all via natural language.
 
-User Authentication: Sign up and log in with username/password or Google OAuth 2.0 (Authlib).
+---
 
-Admin Panel: Store owners can create and manage store profiles, upload inventory files (CSV), and provision custom OpenAI Assistants and vector stores.
+## 📋 Table of Contents
 
-Dynamic Assistant Generation: Automatically uploads inventory data to OpenAI Files API, creates a vector store, and spins up a dedicated Assistant for store-specific queries.
+- [🚀 Key Features](#-key-features)
+- [🏗️ Architecture](#️-architecture)
+- [🛠️ Getting Started](#️-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Database Setup](#database-setup)
+  - [Running Locally](#running-locally)
+- [☁️ Deployment](#️-deployment)
+- [🤝 Contributing](#️-contributing)
+- [📜 License](#️-license)
+- [🙋‍♂️ Authors](#️-authors)
 
-Chat Interface: Persistent chat sessions with history stored in PostgreSQL (SQLAlchemy); users can start new chats or resume past conversations.
+---
 
-Inventory Search & Guidance: Query product availability, price, aisle location, and add items to a shopping list.
+## 🚀 Key Features
 
-Responsive UI: Front-end built with Bootstrap and custom CSS; templates organized under app/templates and static assets under app/static/css.
+| Feature                         | Description                                                         |
+|---------------------------------|----------------------------------------------------------------------|
+| 🔒 **Auth**                     | Username/password & Google OAuth login                              |
+| 🛠️ **Admin Panel**              | Upload CSV inventory, manage store profile, regenerate assistants   |
+| 🤖 **Dynamic Assistants**       | Custom OpenAI Assistants per store with vector-search on inventory  |
+| 💬 **Chat Interface**           | Persistent sessions, history stored in PostgreSQL                   |
+| 📦 **Inventory Management**     | Query product availability, price, aisle location, add to list      |
+| 🎨 **Responsive UI**            | Bootstrap + custom CSS templates                                    |
 
-Secure Configuration: Environment variables manage secrets and API keys; database credentials, OpenAI keys, and OAuth secrets never hard-coded.
+---
 
-Deployment-Ready: Includes Procfile and wsgi.py for Gunicorn; tested on Heroku and Azure App Service.
+## 🏗️ Architecture
 
-🏗️ Architecture Overview
-
+```text
 SmartCart/
-├── app/
-│   ├── extensions.py       # Initializes Flask extensions (SQLAlchemy)
-│   ├── models/             # SQLAlchemy models for Users, Stores, ChatSessions, Messages
-│   ├── services/           # OpenAI integration and assistant utilities
-│   ├── routes/             # Flask Blueprints: auth, admin, chat, general
-│   ├── static/css/         # Custom stylesheets
-│   └── templates/          # Jinja2 templates for all pages
-├── config.py               # Flask configuration (env vars)
-├── requirements.txt        # Python dependencies
-├── app.py                  # Application entry point (development server)
-├── wsgi.py                 # WSGI entry point for production
-├── Procfile                # Heroku/Gunicorn process definition
-└── README.md               # Project documentation (this file)
+├─ app/
+│  ├─ extensions.py       # Init Flask extensions
+│  ├─ models/             # SQLAlchemy models
+│  ├─ services/           # OpenAI integration & assistant utils
+│  ├─ routes/             # Flask Blueprints
+│  ├─ static/css/         # Stylesheets
+│  └─ templates/          # Jinja2 templates
+├─ config.py              # Env-based config
+├─ requirements.txt       # Dependencies
+├─ app.py                 # Dev server entrypoint
+├─ wsgi.py                # Production entrypoint
+├─ Procfile               # Gunicorn process for Heroku
+└─ README.md              # Project docs
+```
 
-🛠️ Getting Started
+---
 
-Prerequisites
+## 🛠️ Getting Started
 
-Python 3.10 or higher
+### Prerequisites
 
-PostgreSQL server (or fallback to SQLite for testing)
+- **Python** ≥ 3.10
+- **PostgreSQL** (or fallback to SQLite)
+- **OpenAI** API key
+- **Google OAuth** credentials (optional)
 
-OpenAI account with API key
+### Installation
 
-Google Cloud credentials for OAuth (optional)
-
-Heroku CLI or Azure CLI for deployment (optional)
-
-Installation
-
-Clone the repository
-
+```bash
+# Clone & enter
 git clone https://github.com/yourusername/SmartCart.git
 cd SmartCart
 
-Create a virtual environment
+# Setup venv
+env=$(python3 -m venv venv && echo venv)  # or python3 -m venv venv
+source $env/bin/activate
 
-python3 -m venv venv
-source venv/bin/activate  # Windows: venv\\Scripts\\activate
-
-Install dependencies
-
+# Install deps
 pip install -r requirements.txt
+```
 
-Configure environment variables
-Create a .env file in the project root:
+### Configuration
 
-SECRET_KEY=your-secret-key
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DB_NAME
-OPENAI_API_KEY=sk-...
-ASSISTANT_ID=             # Optional: preexisting Assistant ID
-VECTOR_STORE_ID=          # Optional: preexisting Vector Store ID
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
+Create a `.env` file in the root:
 
-Database Setup
+```ini
+SECRET_KEY=<your-secret>
+DATABASE_URL=postgresql://USER:PASS@HOST:PORT/DB
+OPENAI_API_KEY=<sk-...>
+ASSISTANT_ID=             # optional
+VECTOR_STORE_ID=          # optional
+GOOGLE_CLIENT_ID=<id>     # optional
+GOOGLE_CLIENT_SECRET=<secret>
+```
 
-Within the virtual environment, initialize the database:
+### Database Setup
 
+```bash
 python - << 'EOF'
 from app import create_app
 from app.extensions import db
@@ -89,41 +107,57 @@ app = create_app()
 with app.app_context():
     db.create_all()
 EOF
+```
 
-Running Locally
+### Running Locally
 
-# Development server
-python app.py
-# Production (Gunicorn)
+```bash
+# Dev mode
+env/bin/python app.py
+# Prod mode
 gunicorn --bind 0.0.0.0:8080 wsgi:app
+```
+Visit <http://localhost:8080> to use SmartCart.
 
-Navigate to http://localhost:8080 and follow the landing page to sign up or log in.
+---
 
-☁️ Deployment
+## ☁️ Deployment
 
-Heroku
-
+**Heroku**
+```bash
 heroku create smartcart-app
-heroku config:set SECRET_KEY=...
-heroku buildpacks:set heroku/python
+heroku config:set SECRET_KEY=... DATABASE_URL=... OPENAI_API_KEY=...
 git push heroku main
+```
 
-Azure App Service
+**Azure App Service**
+```bash
+az webapp up -n smartcart-app --sku F1 --runtime "PYTHON|3.10"
+az webapp config appsettings set -n smartcart-app --settings \
+  SECRET_KEY=... DATABASE_URL=... OPENAI_API_KEY=...
+```
 
-az webapp up --name smartcart-app --sku F1 --runtime "PYTHON|3.10"
-az webapp config appsettings set --name smartcart-app --settings \
-    SECRET_KEY=... DATABASE_URL=... OPENAI_API_KEY=... \
-    GOOGLE_CLIENT_ID=... GOOGLE_CLIENT_SECRET=...
+---
 
-📜 License
+## 🤝 Contributing
 
-This project is licensed under the MIT License. See LICENSE for details.
+1. Fork the repo
+2. Create feature branch (`git checkout -b feature/XYZ`)
+3. Commit changes (`git commit -m "Add XYZ feature"`)
+4. Push & open PR
 
-🙋‍♂️ Authors & Contributors
+Please follow the existing code style and add tests where appropriate.
 
-Gabriel Carson – Cloud Engineer Intern & CS Student – GitHub
+---
 
-Ethan Head – AI Researcher & CS Student – GitHub
+## 📜 License
 
-Feel free to open issues or submit pull requests for improvements.
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
+
+---
+
+## 🙋‍♂️ Authors
+
+- **Gabriel Carson** – Cloud Engineer Intern & CS Student – [GitHub](https://github.com/gcarson1)
+- **Ethan Head** – AI Researcher & CS Student – [GitHub](https://github.com/ethanhead)
 
