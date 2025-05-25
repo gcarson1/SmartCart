@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Cart - Account Settings</title>
+
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+  <style>
+    body {
+      background: linear-gradient(180deg, #366CD9 10%, #547fd5 100%);
+      font-family: "Inter", sans-serif;
+    }
+
+    .top_menu {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background-color: #366CD9;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+    }
+
+    .top_menu .title {
+      font-size: 20px;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    .top_menu .user_info .main-return img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 25px;
+      transition: transform 0.3s ease;
+    }
+
+    .top_menu .user_info .main-return img:hover {
+      transform: scale(1.1);
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 60px; left: 10px; bottom: 0;
+      width: 220px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(6px);
+      padding-top: 20px;
+      border-radius: 15px;
+      z-index: 999;
+      overflow-y: auto;
+      border-right: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar .nav-link {
+      color: #2b54aa;
+      padding: 10px 20px;
+      font-size: 15px;
+      transition: background-color 0.2s ease;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background-color: rgba(54, 108, 217, 0.1);
+      border-left: 4px solid #366CD9;
+      font-weight: 600;
+    }
+
+    .main-container {
+      margin-top: 60px;
+      margin-left: 240px;
+      padding: 20px;
+      min-height: calc(100vh - 60px);
+    }
+
+    .content-wrapper {
+      background-color: #fff;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .content-wrapper h2 {
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 24px;
+      color: #2d5996;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      margin-bottom: 5px;
+      display: block;
+      color: #333;
+    }
+
+    .form-control {
+      border-radius: 8px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: #366CD9;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #2b54aa;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      border: none;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+    }
+
+    .message {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <div class="top_menu">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='default-monochrome-white.svg') }}" alt="SmartCart Logo" class="top-logo" />
+    </div>
+    <div class="title">Account Settings</div>
+    <div class="user_info">
+      <a href="/index" class="main-return">
+        <img src="{{ url_for('static', filename='main-return.png') }}" alt="Return to main page" />
+      </a>
+    </div>
+  </div>
+  <div class="sidebar">
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link active" href="#"><i class="fas fa-user"></i> Profile</a></li>
+      <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
+    </ul>
+  </div>
+  <div class="main-container">
+    <div class="content-wrapper">
+      <h2>Manage Your Account</h2>
+      {% if message %}<div class="message">{{ message }}</div>{% endif %}
+
+      <form method="POST" action="/account_settings">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" name="username" value="{{ username }}" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" class="form-control" id="email" name="email" value="{{ email }}">
+        </div>
+        <div class="form-group">
+          <label for="password">New Password</label>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current">
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </form>
+      <hr>
+      <form method="POST" action="/delete_account" onsubmit="return confirm('Are you sure you want to delete your account? This action is permanent.')">
+        <button type="submit" class="btn btn-danger">Delete Account</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

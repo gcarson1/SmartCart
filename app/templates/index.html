@@ -9,6 +9,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet" />
 
+
+<style>
+.dropdown-menu-container {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 8px;
+  margin: 10px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+}
+.dropdown-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  background: #f5f7fc;
+  border: none;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #2d5996;
+}
+.dropdown-btn:hover {
+  background-color: #e0e8ff;
+}
+</style>
 </head>
 <body>
   <div class="top_menu">
@@ -34,21 +59,26 @@
           <button class="dropdown-btn" onclick="window.location.href='/logout'">
             <i data-lucide="log-out" style="margin-right: 8px;"></i> Sign Out
           </button>
+          <button class="dropdown-btn" onclick="window.location.href='/account_settings'">
+            <i data-lucide="settings" style="margin-right: 8px;"></i> User Settings
+          </button>
         {% elif current_user.is_authenticated and current_user.is_admin %}
           <button class="dropdown-btn" onclick="window.location.href='/admin_panel'">
             <i data-lucide="settings" style="margin-right: 8px;"></i> Admin Dashboard
           </button>
-          <hr />
           <button class="dropdown-btn" onclick="window.location.href='/logout'">
             <i data-lucide="log-out" style="margin-right: 8px;"></i> Sign Out
           </button>
+                    <button class="dropdown-btn" onclick="window.location.href='/account_settings'">
+            <i data-lucide="settings" style="margin-right: 8px;"></i> User Settings
+          </button>
         {% endif %}
       
-        <hr />
         <button class="dropdown-btn" onclick="toggleDarkMode()">
           <i data-lucide="moon" style="margin-right: 8px;"></i> Toggle Dark Mode
         </button>
       </div>
+
       
     </div>
   </div>
@@ -59,6 +89,7 @@
         Previous Chats
         <button class="new-chat-btn" id="new_chat_btn"><i data-lucide="plus-circle"></i></button>
       </div>
+      <div class="dropdown-menu-container" id="store-dropdown" style="display: none;"></div>
       <div class="chat-list"></div>
     </div>
 
@@ -91,25 +122,7 @@
     </div>
   </div>
 
-  <div class="modal fade" id="storeSelectionModal" tabindex="-1" role="dialog" aria-labelledby="storeSelectionModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="storeSelectionModalLabel">Select a Store</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <select class="form-control" id="modalStoreSelect">
-            <option value="">Choose a store...</option>
-          </select>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-primary" id="createChatWithStore" type="button">Create Chat</button>
-        </div>
-      </div>
-    </div>
+  
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -303,7 +316,23 @@ $('#settings-btn').click(e => {
 
   $(document).click(() => $('#settings-dropdown').removeClass('show'));
 
-  $('#new_chat_btn').click(() => $('#storeSelectionModal').modal('show'));
+  $('#new_chat_btn').click(() => {
+    const dropdown = $('#store-dropdown');
+    dropdown.toggle();
+    dropdown.empty();
+    window.globalStores.forEach(store => {
+        const btn = $('<button class="dropdown-btn"></button>')
+            .text(store.name)
+            .click(() => {
+                selectedStoreID = store.store_id;
+                $('.top_menu .title').text(store.name);
+                $('#chat-header-title').text(store.name + ' Chat');
+                dropdown.hide();
+                createNewChat();
+            });
+        dropdown.append(btn);
+    });
+});
 
   $(document).on('keydown', function(e) {
   if (e.key === "Escape") {
