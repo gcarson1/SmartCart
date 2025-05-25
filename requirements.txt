@@ -27,4 +27,4 @@ flask_sqlalchemy==3.1.1
 flask-login==0.6.3
 psycopg2-binary==2.9.10
 authlib==1.5.1
-pydantic==1.10.7
+pydantic==1.10.13
