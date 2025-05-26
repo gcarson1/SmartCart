@@ -168,26 +168,80 @@
       <h2>Manage Your Account</h2>
       {% if message %}<div class="message">{{ message }}</div>{% endif %}
 
-      <form method="POST" action="/account_settings">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" class="form-control" id="username" name="username" value="{{ username }}" required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input type="email" class="form-control" id="email" name="email" value="{{ email }}">
-        </div>
-        <div class="form-group">
-          <label for="password">New Password</label>
-          <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current">
-        </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-      </form>
-      <hr>
-      <form method="POST" action="/delete_account" onsubmit="return confirm('Are you sure you want to delete your account? This action is permanent.')">
-        <button type="submit" class="btn btn-danger">Delete Account</button>
-      </form>
+<div id="account-details">
+
+  <div class="form-group d-flex justify-content-between align-items-center">
+    <div>
+      <label>Username</label>
+      <div id="username-display">{{ username }}</div>
+    </div>
+    <button class="btn btn-sm btn-secondary" onclick="editField('username')">Change</button>
+  </div>
+
+  <div class="form-group d-flex justify-content-between align-items-center">
+    <div>
+      <label>Email Address</label>
+      <div id="email-display">{{ email }}</div>
+    </div>
+    <button class="btn btn-sm btn-secondary" onclick="editField('email')">Change</button>
+  </div>
+
+  <div class="form-group d-flex justify-content-between align-items-center">
+    <div>
+      <label>Password</label>
+      <div id="password-display">********</div>
+    </div>
+    <button class="btn btn-sm btn-secondary" onclick="editField('password')">Change</button>
+  </div>
+
+</div>
+
+<form method="POST" action="/account_settings" id="edit-form" style="display: none;">
+  <div class="form-group">
+    <label id="edit-label" for="edit-input">Edit</label>
+    <input type="text" class="form-control" id="edit-input" name="edit_value">
+    <input type="hidden" id="edit-field" name="field">
+  </div>
+  <button type="submit" class="btn btn-primary">Save</button>
+  <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+</form>
+
+<hr>
+
+<form method="POST" action="/delete_account" onsubmit="return confirm('Are you sure you want to delete your account? This action is permanent.')">
+  <button type="submit" class="btn btn-danger">Delete Account</button>
+</form>
+
+<script>
+  function editField(field) {
+    const displayMap = {
+      username: '{{ username }}',
+      email: '{{ email }}',
+      password: ''
+    };
+    document.getElementById('edit-label').innerText = 'Edit ' + field.charAt(0).toUpperCase() + field.slice(1);
+    document.getElementById('edit-input').value = field === 'password' ? '' : displayMap[field];
+    document.getElementById('edit-input').type = field === 'password' ? 'password' : 'text';
+    document.getElementById('edit-field').value = field;
+    document.getElementById('account-details').style.display = 'none';
+    document.getElementById('edit-form').style.display = 'block';
+  }
+
+  function cancelEdit() {
+    document.getElementById('edit-form').style.display = 'none';
+    document.getElementById('account-details').style.display = 'block';
+  }
+</script>
     </div>
   </div>
+
+  <script>
+    function enableEdit() {
+      document.getElementById('username').removeAttribute('readonly');
+      document.getElementById('email').removeAttribute('readonly');
+      document.getElementById('password').removeAttribute('readonly');
+      document.getElementById('saveBtn').style.display = 'inline-block';
+    }
+  </script>
 </body>
 </html>

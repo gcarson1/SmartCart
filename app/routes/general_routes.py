@@ -30,9 +30,30 @@ def refresh():
 def show_admin_signup_form():
     return render_template('admin_signup.html')
 
-@general_bp.route('/account_settings')
+from flask import flash
+from werkzeug.security import generate_password_hash  # if you're using werkzeug
+
+@general_bp.route('/account_settings', methods=['GET', 'POST'])
+@login_required
 def account_settings():
-    return render_template('account_settings.html')
+    user = current_user
+    if request.method == 'POST':
+        field = request.form.get('field')
+        value = request.form.get('edit_value')
+
+        if field == 'username':
+            user.username = value
+        elif field == 'email':
+            user.email = value
+        elif field == 'password' and value.strip():
+            user.password = generate_password_hash(value)
+        
+        db.session.commit()
+        flash("Information updated successfully.")
+        return redirect('/account_settings')
+
+    return render_template("account_settings.html", username=user.username, email=user.email)
+
 
 @general_bp.route('/delete_account', methods=['POST'])
 @login_required
