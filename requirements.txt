@@ -6,12 +6,12 @@ blinker==1.9.0
 certifi==2025.1.31
 charset-normalizer==3.4.1
 click==8.1.8
-Flask==3.1.0
+Flask>=3.1.1
 frozenlist==1.5.0
 gunicorn==23.0.0
 idna==3.10
 itsdangerous==2.2.0
-Jinja2==3.1.5
+Jinja2==3.1.6
 MarkupSafe==3.0.2
 multidict==6.1.0
 openai==1.61.1
@@ -27,4 +27,4 @@ flask_sqlalchemy==3.1.1
 flask-login==0.6.3
 psycopg2-binary==2.9.10
 authlib==1.5.1
-pydantic==1.10.7
+pydantic==1.10.13
