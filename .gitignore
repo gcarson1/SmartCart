@@ -1,6 +1,7 @@
 venv/
 .env
-chat_history.txt
-postgres.sql
 Dockerfile
 .dockerignore
+*.tfstate
+*.tfstate.*
+*.hcl
