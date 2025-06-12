@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
 
-A **GenAI-powered** retail assistant chatbot that guides shoppers through grocery stores, answers inventory questions, and builds shopping lists—all via natural language.
+SmartCart is a **GenAI-powered grocery assistant** that helps users navigate stores, check inventory in real-time, and build shopping lists through natural language interaction. It’s built with Flask and OpenAI APIs and now fully deployed to Azure using modern IaC principles with OpenTofu.
 
 ---
 
@@ -18,7 +18,7 @@ A **GenAI-powered** retail assistant chatbot that guides shoppers through grocer
   - [Configuration](#configuration)
   - [Database Setup](#database-setup)
   - [Running Locally](#running-locally)
-- [☁️ Deployment](#️-deployment)
+- [☁️ Deployment (Azure w/ IaC)](#️-deployment-azure-w-iac)
 - [🤝 Contributing](#️-contributing)
 - [📜 License](#️-license)
 - [🙋‍♂️ Authors](#️-authors)
@@ -29,32 +29,32 @@ A **GenAI-powered** retail assistant chatbot that guides shoppers through grocer
 
 | Feature                         | Description                                                         |
 |---------------------------------|----------------------------------------------------------------------|
-| 🔒 **Auth**                     | Username/password & Google OAuth login                              |
-| 🛠️ **Admin Panel**              | Upload CSV inventory, manage store profile, regenerate assistants   |
-| 🤖 **Dynamic Assistants**       | Custom OpenAI Assistants per store with vector-search on inventory  |
-| 💬 **Chat Interface**           | Persistent sessions, history stored in PostgreSQL                   |
-| 📦 **Inventory Management**     | Query product availability, price, aisle location, add to list      |
-| 🎨 **Responsive UI**            | Bootstrap + custom CSS templates                                    |
+| 🔐 **User Authentication**      | Supports login via username/password and Google OAuth               |
+| 🛠️ **Admin Panel**              | Upload inventory via CSV, manage store profile, regenerate AI       |
+| 🤖 **OpenAI Assistants**        | Custom assistant per store, vector search via embedded inventory    |
+| 💬 **Chatbot Interface**        | Persistent sessions, history stored in PostgreSQL                   |
+| 📦 **Inventory Insights**       | Ask about item availability, pricing, location, and list management |
+| 📱 **Responsive UI**            | Bootstrap + custom CSS                                              |
 
 ---
 
 ## 🏗️ Architecture
 
-```text
+```
 SmartCart/
 ├─ app/
-│  ├─ extensions.py       # Init Flask extensions
+│  ├─ extensions.py       # Flask extension setup
 │  ├─ models/             # SQLAlchemy models
-│  ├─ services/           # OpenAI integration & assistant utils
+│  ├─ services/           # OpenAI + assistant utils
 │  ├─ routes/             # Flask Blueprints
-│  ├─ static/css/         # Stylesheets
-│  └─ templates/          # Jinja2 templates
-├─ config.py              # Env-based config
-├─ requirements.txt       # Dependencies
-├─ app.py                 # Dev server entrypoint
-├─ wsgi.py                # Production entrypoint
-├─ Procfile               # Gunicorn process for Heroku
-└─ README.md              # Project docs
+│  ├─ static/css/         # Styles
+│  └─ templates/          # Jinja2 views
+├─ config.py              # App config loader
+├─ app.py                 # Dev entrypoint
+├─ wsgi.py                # Gunicorn production entry
+├─ IaC/                   # OpenTofu infrastructure setup for Azure
+├─ requirements.txt
+└─ README.md
 ```
 
 ---
@@ -63,38 +63,33 @@ SmartCart/
 
 ### Prerequisites
 
-- **Python** ≥ 3.10
-- **PostgreSQL** (or fallback to SQLite)
-- **OpenAI** API key
-- **Google OAuth** credentials (optional)
+- Python ≥ 3.10
+- PostgreSQL (Azure Flexible Server recommended)
+- OpenAI API key
+- Google OAuth credentials (optional)
 
 ### Installation
 
 ```bash
-# Clone & enter
-git clone https://github.com/yourusername/SmartCart.git
+git clone https://github.com/gcarson1/SmartCart.git
 cd SmartCart
 
-# Setup venv
-env=$(python3 -m venv venv && echo venv)  # or python3 -m venv venv
-source $env/bin/activate
+python3 -m venv venv
+source venv/bin/activate
 
-# Install deps
 pip install -r requirements.txt
 ```
 
 ### Configuration
 
-Create a `.env` file in the root:
+Create a `.env` file with the following:
 
 ```ini
-SECRET_KEY=<your-secret>
-DATABASE_URL=postgresql://USER:PASS@HOST:PORT/DB
-OPENAI_API_KEY=<sk-...>
-ASSISTANT_ID=             # optional
-VECTOR_STORE_ID=          # optional
-GOOGLE_CLIENT_ID=<id>     # optional
-GOOGLE_CLIENT_SECRET=<secret>
+SECRET_KEY=your-secret-key
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+OPENAI_API_KEY=sk-...
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
 ```
 
 ### Database Setup
@@ -112,52 +107,70 @@ EOF
 ### Running Locally
 
 ```bash
-# Dev mode
-env/bin/python app.py
-# Prod mode
-gunicorn --bind 0.0.0.0:8080 wsgi:app
+python app.py       # Development mode
+# or
+gunicorn -b 0.0.0.0:8080 wsgi:app   # Production
 ```
-Visit <http://localhost:8080> to use SmartCart.
+
+Visit `http://localhost:8080` to interact with SmartCart.
 
 ---
 
-## ☁️ Deployment
+## ☁️ Deployment (Azure w/ IaC)
 
-**Heroku**
-```bash
-heroku create smartcart-app
-heroku config:set SECRET_KEY=... DATABASE_URL=... OPENAI_API_KEY=...
-git push heroku main
-```
+This project now uses **OpenTofu** to manage Azure resources declaratively.
 
-**Azure App Service**
-```bash
-az webapp up -n smartcart-app --sku F1 --runtime "PYTHON|3.10"
-az webapp config appsettings set -n smartcart-app --settings \
-  SECRET_KEY=... DATABASE_URL=... OPENAI_API_KEY=...
-```
+### Infrastructure Stack
+
+- Azure App Service (Python 3.10)
+- Azure PostgreSQL Flexible Server
+- Azure Key Vault for secret management
+- Azure Storage (optional)
+- Managed Identity access
+
+### Steps
+
+1. Clone and navigate into the `IaC` directory:
+   ```bash
+   cd IaC
+   ```
+
+2. Initialize and apply the infrastructure:
+   ```bash
+   tofu init
+   tofu apply
+   ```
+
+3. Set environment variables in Azure via `appsettings` or Key Vault bindings:
+   - `SECRET_KEY`
+   - `DATABASE_URL`
+   - `OPENAI_API_KEY`
+   - etc.
+
+4. Push your code to Azure via GitHub Actions, ZipDeploy, or `az webapp deployment source`.
+
+> Note: Your app is now containerized and managed through Azure’s App Service and uses secure, scalable cloud infra provisioned with code.
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork the repo
-2. Create feature branch (`git checkout -b feature/XYZ`)
-3. Commit changes (`git commit -m "Add XYZ feature"`)
-4. Push & open PR
+1. Fork this repo
+2. Create your branch (`git checkout -b feature/thing`)
+3. Commit (`git commit -m "add feature"`)
+4. Push (`git push origin feature/thing`)
+5. Submit a pull request
 
-Please follow the existing code style and add tests where appropriate.
+Follow PEP8 and keep changes modular.
 
 ---
 
 ## 📜 License
 
-Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
+Licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
 ## 🙋‍♂️ Authors
 
 - **Gabriel Carson** – Cloud Engineer Intern & CS Student – [GitHub](https://github.com/gcarson1)
-- **Ethan Head** – AI Researcher & CS Student – [GitHub](https://github.com/ethanhead)
-
