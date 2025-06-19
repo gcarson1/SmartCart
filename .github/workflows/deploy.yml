@@ -1,0 +1,36 @@
+name: Build and Deploy SmartCart
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Log in to ACR
+      run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY_LOGIN }}.azurecr.io -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
+
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ secrets.REGISTRY_LOGIN }}.azurecr.io/smartcart:latest .
+
+    - name: Push Docker image to ACR
+      run: |
+        docker push ${{ secrets.REGISTRY_LOGIN }}.azurecr.io/smartcart:latest
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'smartcart-application'
+        images: '${{ secrets.REGISTRY_LOGIN }}.azurecr.io/smartcart:latest'
