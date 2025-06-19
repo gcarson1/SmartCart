@@ -1,6 +1,5 @@
 venv/
 .env
-Dockerfile
 .dockerignore
 *.tfstate
 *.tfstate.*
