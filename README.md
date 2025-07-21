@@ -1,4 +1,4 @@
-# 🛒 SmartCart
+# SmartCart
 
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -28,9 +28,9 @@ SmartCart is a **GenAI-powered grocery assistant** that helps users navigate sto
 ## 🚀 Key Features
 
 | Feature                         | Description                                                         |
-|---------------------------------|----------------------------------------------------------------------|
-| 🔐 **User Authentication**      | Supports login via username/password and Google OAuth               |
-| 🛠️ **Admin Panel**              | Upload inventory via CSV, manage store profile, regenerate AI       |
+|---------------------------------|---------------------------------------------------------------------|
+| 🔐 **User Authentication**      | Supports login via username/password                                |
+| 🛠️ **Admin Panel**              | Upload inventory via CSV, manage store profile, update agent        |
 | 🤖 **OpenAI Assistants**        | Custom assistant per store, vector search via embedded inventory    |
 | 💬 **Chatbot Interface**        | Persistent sessions, history stored in PostgreSQL                   |
 | 📦 **Inventory Insights**       | Ask about item availability, pricing, location, and list management |
@@ -54,6 +54,7 @@ SmartCart/
 ├─ wsgi.py                # Gunicorn production entry
 ├─ IaC/                   # OpenTofu infrastructure setup for Azure
 ├─ requirements.txt
+├─ Dockerfile
 └─ README.md
 ```
 
@@ -114,6 +115,8 @@ gunicorn -b 0.0.0.0:8080 wsgi:app   # Production
 
 Visit `http://localhost:8080` to interact with SmartCart.
 
+Recommended: Run in a Docker container with the Dockerfile.
+
 ---
 
 ## ☁️ Deployment (Azure w/ IaC)
@@ -148,20 +151,6 @@ This project now uses **OpenTofu** to manage Azure resources declaratively.
    - etc.
 
 4. Push your code to Azure via GitHub Actions, ZipDeploy, or `az webapp deployment source`.
-
-> Note: Your app is now containerized and managed through Azure’s App Service and uses secure, scalable cloud infra provisioned with code.
-
----
-
-## 🤝 Contributing
-
-1. Fork this repo
-2. Create your branch (`git checkout -b feature/thing`)
-3. Commit (`git commit -m "add feature"`)
-4. Push (`git push origin feature/thing`)
-5. Submit a pull request
-
-Follow PEP8 and keep changes modular.
 
 ---
 
